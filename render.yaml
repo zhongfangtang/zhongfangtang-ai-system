@@ -1,0 +1,82 @@
+# ============================================================
+# Render Blueprint —— 中芳堂美业全域AI智能体系统 · 后端一键部署
+# ============================================================
+# 用法：
+#   1. 把本仓库推到你的 GitHub
+#   2. Render 控制台 → New → Blueprint → 连接该仓库 → Render 按此配置自动创建服务
+#   3. 在 Render 环境变量面板填入 sync:false 标记的必填项（🔴 密钥 / MongoDB / Redis）
+#   4. 部署完成后，把本服务的地址（如 xxx.onrender.com）配到 BI 看板的 apiBase
+#
+# 说明：
+#   - 运行时用 Node（无需 Docker），免费档 plan: free
+#   - 数据库用外部免费服务：MongoDB Atlas(M0 免费) + Upstash Redis(免费)
+#   - 自定义域名 zft.51gaozhan.com 在 Render 绑定后，于 51gaozhan DNS 加 CNAME 指向本服务
+# ============================================================
+
+services:
+  - type: web
+    name: zhongfangtang-api
+    runtime: node
+    plan: free
+    branch: main
+    buildCommand: npm install
+    startCommand: node src/index.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3001"
+      # 允许访问本后端的看板/前端来源（逗号分隔，无空格）
+      - key: CORS_ORIGINS
+        value: https://www.htmlcode.fun,https://zft.51gaozhan.com
+      # ---- 以下为需你填写的必填项（Render 中显示为占位，部署前填入） ----
+      - key: MONGODB_URI          # 🔴 MongoDB Atlas 连接串
+        sync: false
+      - key: REDIS_HOST           # 🔴 Upstash Redis host
+        sync: false
+      - key: REDIS_PORT
+        value: "6379"
+      - key: REDIS_PASSWORD       # 🔴 Upstash Redis password
+        sync: false
+      - key: JWT_SECRET           # 🔴 随机长字符串
+        sync: false
+      - key: AI_MODEL_API_KEY     # 🔴 硅基流动/DeepSeek 密钥
+        sync: false
+      - key: AI_MODEL_ENDPOINT
+        value: https://api.siliconflow.cn/v1
+      - key: AI_MODEL_TEXT
+        value: Qwen2.5-7B-Instruct
+      # 六大平台（按需填写，不填走人工复核队列）
+      - key: DOUYIN_APP_ID
+        sync: false
+      - key: DOUYIN_APP_SECRET
+        sync: false
+      - key: XIAOHONGSHU_APP_ID
+        sync: false
+      - key: XIAOHONGSHU_APP_SECRET
+        sync: false
+      - key: WEIXIN_APP_ID
+        sync: false
+      - key: WEIXIN_APP_SECRET
+        sync: false
+      - key: KUAISHOU_APP_ID
+        sync: false
+      - key: KUAISHOU_APP_SECRET
+        sync: false
+      - key: BILIBILI_APP_ID
+        sync: false
+      - key: BILIBILI_APP_SECRET
+        sync: false
+      - key: BAIJIAHAO_APP_ID
+        sync: false
+      - key: BAIJIAHAO_APP_SECRET
+        sync: false
+      - key: WEWORK_CORP_ID
+        sync: false
+      - key: MINIPROGRAM_APP_ID
+        sync: false
+      - key: MINIPROGRAM_APP_SECRET
+        sync: false
+      - key: WEB3_ENABLED
+        value: "false"

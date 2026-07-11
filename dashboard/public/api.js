@@ -7,15 +7,15 @@ const API_CONFIG = {
     baseURL: '',          // 后端地址，留空则自动降级到 Mock（零配置预览）
     useMock: false,       // 已改为"真实优先 + Mock 无缝降级"模式
     endpoints: {
-        overview: '/api/overview',
-        platformData: '/api/platform-data',
-        funnel: '/api/funnel',
-        trend: '/api/trend',
-        channel: '/api/channel',
-        userProfile: '/api/user-profile',
-        privateDomain: '/api/private-domain',
-        report: '/api/report',
-        geo: '/api/geo/performance'
+        overview: '/api/v1/dashboard/overview',
+        platformData: '/api/v1/dashboard/platform-data',
+        funnel: '/api/v1/dashboard/funnel',
+        trend: '/api/v1/dashboard/trend',
+        channel: '/api/v1/dashboard/channel',
+        userProfile: '/api/v1/dashboard/user-profile',
+        privateDomain: '/api/v1/dashboard/private-domain',
+        report: '/api/v1/dashboard/report',
+        geo: '/api/v1/dashboard/geo/performance'
     }
 };
 

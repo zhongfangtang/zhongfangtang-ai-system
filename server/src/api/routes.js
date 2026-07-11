@@ -13,6 +13,7 @@ import analyticsRoutes from './analyticsRoutes.js';
 import crmRoutes from './crmRoutes.js';
 import web3Routes from './web3Routes.js';
 import integrationRoutes from './integrationRoutes.js';
+import dashboardRoutes from './dashboardRoutes.js';
 import { authenticate } from '../middleware/auth.js';
 import { generateToken } from '../middleware/auth.js';
 
@@ -105,6 +106,9 @@ router.use('/web3', web3Routes);
 
 /** 集成中枢（企业微信/ERP/腕家H1/Webhook） */
 router.use('/integrations', integrationRoutes);
+
+// ==================== BI 数据中台（公开，免鉴权） ====================
+router.use('/dashboard', dashboardRoutes);
 
 // ==================== 系统接口 ====================
 

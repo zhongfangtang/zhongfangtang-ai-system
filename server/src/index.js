@@ -28,9 +28,15 @@ const server = createServer(app);
 app.use(helmet());
 
 /** CORS 跨域 */
+// 生产环境允许的来源由 CORS_ORIGINS 配置（逗号分隔），至少包含 BI 看板域名与自有域名；
+// 未配置时回退到默认管理后台域名。开发环境放开为 '*'。
+const corsOrigins = (process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
 app.use(cors({
   origin: process.env.NODE_ENV === 'production'
-    ? ['https://admin.zhongfangtang.com']
+    ? (corsOrigins.length ? corsOrigins : ['https://admin.zhongfangtang.com'])
     : '*',
   credentials: true,
 }));
