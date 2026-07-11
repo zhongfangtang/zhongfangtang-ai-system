@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中芳堂 · 运营后台</title>
+<style>
+  :root{--bg:#0f0f1a;--card:#1a1a2e;--gold:#d4a853;--gold2:#e8c97a;--line:#2a2a44;--txt:#e8e8f0;--mut:#8a8aa0;--grn:#3fb98a;--red:#e06c6c;--blue:#5b9bd5}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--txt);font-size:14px}
+  a{color:var(--gold2)}
+  .wrap{max-width:1080px;margin:0 auto;padding:20px}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:linear-gradient(90deg,#1a1a2e,#221a12);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+  .brand{font-weight:700;font-size:18px;color:var(--gold)}
+  .brand small{color:var(--mut);font-weight:400;font-size:12px;margin-left:8px}
+  .user{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--mut)}
+  .btn{background:var(--gold);color:#1a1a2e;border:0;padding:9px 16px;border-radius:8px;font-weight:600;cursor:pointer;font-size:13px}
+  .btn:hover{background:var(--gold2)}
+  .btn.ghost{background:transparent;color:var(--mut);border:1px solid var(--line)}
+  .btn.sm{padding:5px 10px;font-size:12px}
+  .btn.blue{background:var(--blue);color:#fff}
+  input,select,textarea{width:100%;background:#12121f;color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:13px;font-family:inherit}
+  label{display:block;color:var(--mut);font-size:12px;margin:10px 0 4px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .tabs{display:flex;gap:6px;margin:18px 0}
+  .tab{padding:9px 16px;border-radius:8px;cursor:pointer;color:var(--mut);border:1px solid transparent;font-weight:600}
+  .tab.on{color:var(--gold);background:#221a12;border-color:var(--line)}
+  .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600}
+  .b-draft{background:#33334d;color:#cdd}
+  .b-pending{background:#3a3320;color:var(--gold2)}
+  .b-reviewing{background:#2a3a4a;color:var(--blue)}
+  .b-published{background:#1f3a2e;color:var(--grn)}
+  .b-new{background:#33334d;color:#cdd}
+  .b-contacted{background:#2a3a4a;color:var(--blue)}
+  .b-converted{background:#1f3a2e;color:var(--grn)}
+  .b-high{background:#3a1f1f;color:var(--red)}
+  .row{display:flex;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:0}
+  .row .meta{color:var(--mut);font-size:12px}
+  .grow{flex:1;min-width:0}
+  .ell{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .stat{display:flex;flex-direction:column;gap:4px}
+  .stat b{font-size:26px;color:var(--gold)}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#2a2a44;color:#fff;padding:11px 20px;border-radius:10px;opacity:0;transition:.3s;z-index:20;font-size:13px;border:1px solid var(--line)}
+  .toast.show{opacity:1}
+  .hint{color:var(--mut);font-size:12px;margin-top:6px}
+  pre{white-space:pre-wrap;word-break:break-word;background:#12121f;border:1px solid var(--line);border-radius:8px;padding:11px;font-size:12px;line-height:1.6;max-height:240px;overflow:auto}
+  #login{display:flex;align-items:center;justify-content:center;min-height:100vh}
+  .login-card{width:340px}
+  .login-card h2{margin:0 0 4px;color:var(--gold)}
+  #app{display:none}
+  .pill{font-size:11px;color:var(--mut);border:1px solid var(--line);border-radius:20px;padding:2px 9px}
+  .ok{color:var(--grn)} .err{color:var(--red)}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="card login-card">
+    <h2>中芳堂 · 运营后台</h2>
+    <div class="hint">登录后可使用真实运营功能（内容生成 / 线索 / 客户 / 发布）</div>
+    <label>账号</label><input id="u" value="admin" autocomplete="username">
+    <label>密码</label><input id="p" type="password" value="admin123" autocomplete="current-password">
+    <div style="margin-top:16px"><button class="btn" style="width:100%" onclick="doLogin()">登 录</button></div>
+    <div class="hint" id="loginMsg"></div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <div class="brand">中芳堂 · 运营后台<small id="who"></small></div>
+    <div class="user"><span id="conn" class="pill">连接中…</span><span id="me"></span><button class="btn ghost sm" onclick="logout()">退出</button></div>
+  </div>
+  <div class="wrap">
+    <div class="tabs">
+      <div class="tab on" data-t="content" onclick="switchTab('content')">内容生成</div>
+      <div class="tab" data-t="leads" onclick="switchTab('leads')">截流线索</div>
+      <div class="tab" data-t="cust" onclick="switchTab('cust')">客户CRM</div>
+      <div class="tab" data-t="status" onclick="switchTab('status')">系统状态</div>
+    </div>
+
+    <!-- 内容生成 -->
+    <div id="tab-content">
+      <div class="card">
+        <b style="color:var(--gold2)">AI 内容生成</b>
+        <div class="grid3" style="margin-top:8px">
+          <div><label>平台</label><select id="c_platform">
+            <option value="xiaohongshu">小红书</option><option value="douyin">抖音</option>
+            <option value="weixin">公众号</option><option value="kuaishou">快手</option>
+            <option value="bilibili">B站</option><option value="baijiahao">百家号</option>
+          </select></div>
+          <div><label>体质（九体辨识）</label><select id="c_const">
+            <option>平和质</option><option>气虚质</option><option>阳虚质</option><option>阴虚质</option>
+            <option>痰湿质</option><option>湿热质</option><option>血瘀质</option><option>气郁质</option><option>特禀质</option>
+          </select></div>
+          <div><label>类型</label><select id="c_type">
+            <option value="article">图文/文章</option><option value="video">短视频</option>
+            <option value="image_text">图文帖</option><option value="poster">海报文案</option>
+          </select></div>
+        </div>
+        <label>主题 / 选题</label><input id="c_topic" value="九体辨识精油居家调理">
+        <div style="margin-top:12px"><button class="btn" onclick="genContent()">⚡ 生成并保存</button>
+          <span class="hint" id="genMode"></span></div>
+      </div>
+      <div class="card" id="genResult" style="display:none">
+        <b id="gr_title" style="color:var(--gold2)"></b>
+        <pre id="gr_body"></pre>
+        <div id="gr_extra" class="hint"></div>
+      </div>
+      <div class="card">
+        <b style="color:var(--gold2)">内容库</b><span class="hint" id="c_count"></span>
+        <div id="contentList"></div>
+      </div>
+    </div>
+
+    <!-- 截流线索 -->
+    <div id="tab-leads" style="display:none">
+      <div class="card">
+        <b style="color:var(--gold2)">捕获线索</b>
+        <div class="grid3" style="margin-top:8px">
+          <div><label>平台</label><select id="l_platform"><option value="douyin">抖音</option><option value="xiaohongshu">小红书</option><option value="weixin">视频号</option><option value="kuaishou">快手</option><option value="bilibili">B站</option><option value="baidu">百度</option></select></div>
+          <div><label>作者</label><input id="l_author" placeholder="昵称"></div>
+          <div><label>地区</label><input id="l_loc" placeholder="如 宜昌伍家岗"></div>
+        </div>
+        <label>内容（评论/私信/提问原文）</label><textarea id="l_content" rows="2" placeholder="例如：宜昌有没有靠谱的精油推拿？我气虚总累"></textarea>
+        <div class="grid3" style="margin-top:8px">
+          <div><label>来源</label><select id="l_source"><option value="comment">评论</option><option value="question">提问</option><option value="dm">私信</option><option value="post">帖子</option></select></div>
+          <div><label>意向分(0-100)</label><input id="l_score" type="number" value="60"></div>
+          <div><label>匹配关键词(逗号分隔)</label><input id="l_kw" placeholder="精油,推拿"></div>
+        </div>
+        <div style="margin-top:12px"><button class="btn blue" onclick="addLead()">＋ 捕获线索入库</button></div>
+      </div>
+      <div class="card"><b style="color:var(--gold2)">线索池</b><span class="hint" id="l_count"></span><div id="leadList"></div></div>
+    </div>
+
+    <!-- 客户CRM -->
+    <div id="tab-cust" style="display:none">
+      <div class="card">
+        <b style="color:var(--gold2)">新建客户档案</b>
+        <div class="grid3" style="margin-top:8px">
+          <div><label>昵称 *</label><input id="cu_name" placeholder="如 小宜昌"></div>
+          <div><label>电话</label><input id="cu_phone" placeholder="选填"></div>
+          <div><label>等级</label><select id="cu_tier"><option value="C">C 普通</option><option value="B">B 潜力</option><option value="A">A 高价值</option><option value="D">D 沉默</option></select></div>
+        </div>
+        <div class="grid3" style="margin-top:8px">
+          <div><label>性别</label><select id="cu_gender"><option value="unknown">未知</option><option value="female">女</option><option value="male">男</option></select></div>
+          <div><label>体质</label><select id="cu_const"><option value="">不限</option><option>平和质</option><option>气虚质</option><option>阳虚质</option><option>阴虚质</option><option>痰湿质</option><option>湿热质</option><option>血瘀质</option><option>气郁质</option><option>特禀质</option></select></div>
+          <div><label>诉求(逗号分隔)</label><input id="cu_con" placeholder="睡眠,祛湿"></div>
+        </div>
+        <label>备注</label><input id="cu_note" placeholder="选填">
+        <div style="margin-top:12px"><button class="btn blue" onclick="addCustomer()">＋ 建档</button></div>
+      </div>
+      <div class="card"><b style="color:var(--gold2)">客户列表</b><span class="hint" id="cu_count"></span><div id="custList"></div></div>
+    </div>
+
+    <!-- 系统状态 -->
+    <div id="tab-status" style="display:none">
+      <div class="card"><b style="color:var(--gold2)">引擎状态</b><div id="engineStatus" class="grid2" style="margin-top:10px"></div></div>
+      <div class="card"><b style="color:var(--gold2)">真实数据计数</b><div id="counts" class="grid3" style="margin-top:10px"></div>
+        <div class="hint" id="aiMode" style="margin-top:10px"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = '';   // 部署时由构建脚本注入后端公网地址
+let TOKEN = localStorage.getItem('zft_token') || '';
+let ME = localStorage.getItem('zft_me') || '';
+
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+function esc(s){return (s==null?'':String(s)).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+
+async function api(path, opts={}){
+  const headers={'Content-Type':'application/json'};
+  if(TOKEN) headers['Authorization']='Bearer '+TOKEN;
+  const r=await fetch(API_BASE+path,{...opts,headers});
+  if(r.status===401){logout();throw new Error('登录已失效');}
+  const j=await r.json().catch(()=>({success:false,message:'响应解析失败'}));
+  return {ok:r.ok, status:r.status, j};
+}
+
+async function doLogin(){
+  const u=document.getElementById('u').value, p=document.getElementById('p').value;
+  const {ok,j}=await api('/api/v1/auth/login',{method:'POST',body:JSON.stringify({username:u,password:p})});
+  if(ok&&j.success){TOKEN=j.data.token;ME=j.data.role||u;localStorage.setItem('zft_token',TOKEN);localStorage.setItem('zft_me',ME);enter();toast('登录成功');}
+  else{document.getElementById('loginMsg').innerHTML='<span class="err">账号或密码错误</span>';}
+}
+
+function logout(){TOKEN='';ME='';localStorage.removeItem('zft_token');localStorage.removeItem('zft_me');location.reload();}
+
+function enter(){
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('me').textContent=ME;
+  document.getElementById('who').textContent=' · '+ME;
+  checkConn(); loadStatus();
+}
+
+async function checkConn(){
+  try{const {ok}=await api('/api/v1/system/status');const el=document.getElementById('conn');
+    if(ok){el.textContent='● 后端在线';el.className='pill ok';}else{el.textContent='○ 后端离线';el.className='pill err';}}
+  catch(e){document.getElementById('conn').textContent='○ 后端离线';document.getElementById('conn').className='pill err';}
+}
+
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.t===t));
+  ['content','leads','cust','status'].forEach(x=>document.getElementById('tab-'+x).style.display=(x===t?'block':'none'));
+  if(t==='content')loadContent(); if(t==='leads')loadLeads(); if(t==='cust')loadCustomers(); if(t==='status')loadStatus();
+}
+
+async function genContent(){
+  const body={platform:document.getElementById('c_platform').value,constitution:document.getElementById('c_const').value,topic:document.getElementById('c_topic').value,type:document.getElementById('c_type').value};
+  const btn=event.target; btn.disabled=true; btn.textContent='生成中…';
+  const {ok,j}=await api('/api/v1/console/content/generate',{method:'POST',body:JSON.stringify(body)});
+  btn.disabled=false; btn.textContent='⚡ 生成并保存';
+  if(ok&&j.success){toast(j.message);document.getElementById('genMode').textContent=j.data.aiGenerated?'（AI 大模型生成）':'（知识库组合生成）';
+    document.getElementById('genResult').style.display='block';
+    document.getElementById('gr_title').textContent=j.data.title;
+    document.getElementById('gr_body').textContent=j.data.body;
+    const kp=(j.data.metadata&&j.data.metadata.keyPoints)||[];
+    document.getElementById('gr_extra').innerHTML='标签：'+(j.data.hashtags||[]).map(h=>'#'+h).join(' ')+(kp.length?'<br>要点：<br>'+kp.map((k,i)=>(i+1)+'. '+k).join('<br>'):'');
+    loadContent();
+  } else toast('生成失败：'+(j.message||'未知错误'));
+}
+
+async function loadContent(){
+  const {ok,j}=await api('/api/v1/console/content');
+  if(!(ok&&j.success))return;
+  document.getElementById('c_count').textContent='共 '+j.data.length+' 条';
+  document.getElementById('contentList').innerHTML=j.data.map(c=>`
+    <div class="row">
+      <div class="grow">
+        <div class="ell"><b>${esc(c.title)}</b></div>
+        <div class="meta">${esc(c.platform)} · <span class="badge b-${esc(c.status)}">${esc(c.status)}</span> · ${c.aiGenerated?'AI':'知识库'} · ${new Date(c.createdAt).toLocaleString('zh-CN')}</div>
+      </div>
+      <button class="btn sm" onclick="publish('${c._id}')">发布队列</button>
+    </div>`).join('')||'<div class="hint">暂无内容，先生成一条</div>';
+}
+async function publish(id){
+  const {ok,j}=await api('/api/v1/console/content/'+id+'/publish',{method:'POST',body:'{}'});
+  toast(ok&&j.success?j.message:'发布失败'); if(ok)loadContent();
+}
+
+async function addLead(){
+  const body={platform:document.getElementById('l_platform').value,authorName:document.getElementById('l_author').value,content:document.getElementById('l_content').value,location:document.getElementById('l_loc').value,source:document.getElementById('l_source').value,intentScore:document.getElementById('l_score').value,matchedKeywords:document.getElementById('l_kw').value.split(',').map(s=>s.trim()).filter(Boolean)};
+  if(!body.content){toast('请填写线索内容');return;}
+  const {ok,j}=await api('/api/v1/console/leads',{method:'POST',body:JSON.stringify(body)});
+  toast(ok&&j.success?j.message:'失败'); if(ok){document.getElementById('l_content').value='';loadLeads();}
+}
+async function loadLeads(){
+  const {ok,j}=await api('/api/v1/console/leads'); if(!(ok&&j.success))return;
+  document.getElementById('l_count').textContent='共 '+j.data.length+' 条';
+  document.getElementById('leadList').innerHTML=j.data.map(l=>`
+    <div class="row">
+      <div class="grow"><div class="ell"><b>${esc(l.authorName||'匿名')}</b> <span class="meta">· ${esc(l.platform)} · 意向${l.intentScore}</span></div>
+      <div class="meta ell">${esc(l.content)}</div></div>
+      <span class="badge ${l.isHighPotential?'b-high':'b-'+esc(l.status)}">${l.isHighPotential?'高潜':esc(l.status)}</span>
+      <button class="btn sm ghost" onclick="setLead('${l._id}','contacted')">联系</button>
+      <button class="btn sm" onclick="setLead('${l._id}','converted')">转化</button>
+    </div>`).join('')||'<div class="hint">暂无线索</div>';
+}
+async function setLead(id,s){const {ok,j}=await api('/api/v1/console/leads/'+id+'/status',{method:'PUT',body:JSON.stringify({status:s})});if(ok)loadLeads();}
+
+async function addCustomer(){
+  const body={nickname:document.getElementById('cu_name').value,phone:document.getElementById('cu_phone').value,gender:document.getElementById('cu_gender').value,tier:document.getElementById('cu_tier').value,constitution:document.getElementById('cu_const').value,concerns:document.getElementById('cu_con').value.split(',').map(s=>s.trim()).filter(Boolean),notes:document.getElementById('cu_note').value};
+  if(!body.nickname){toast('请填写昵称');return;}
+  const {ok,j}=await api('/api/v1/console/customers',{method:'POST',body:JSON.stringify(body)});
+  toast(ok&&j.success?j.message:'失败'); if(ok){document.getElementById('cu_name').value='';loadCustomers();}
+}
+async function loadCustomers(){
+  const {ok,j}=await api('/api/v1/console/customers'); if(!(ok&&j.success))return;
+  document.getElementById('cu_count').textContent='共 '+j.data.length+' 条';
+  document.getElementById('custList').innerHTML=j.data.map(c=>`
+    <div class="row"><div class="grow"><div class="ell"><b>${esc(c.nickname)}</b> <span class="meta">· ${esc(c.phone||'无电话')} · ${esc(c.tier)}级${c.constitution?' · '+esc(c.constitution):''}</span></div>
+    <div class="meta">${esc((c.concerns||[]).join('/'))}</div></div>
+    <span class="badge b-${esc(c.status)}">${esc(c.status)}</span></div>`).join('')||'<div class="hint">暂无客户</div>';
+}
+
+async function loadStatus(){
+  const {ok,j}=await api('/api/v1/console/status'); if(!(ok&&j.success))return;
+  const e=j.data.engines;
+  document.getElementById('engineStatus').innerHTML=Object.entries(e).map(([k,v])=>`<div class="stat"><span class="meta">${esc(k)}</span><b class="${v==='running'?'ok':''}">${v==='running'?'● 运行中':(v==='placeholder'?'○ 占位(概念)':'—')}</b></div>`).join('');
+  const c=j.data.counts;
+  document.getElementById('counts').innerHTML=[['内容',c.content],['线索',c.leads],['客户',c.customers],['发布记录',c.publishes]].map(([k,v])=>`<div class="stat"><b>${v}</b><span class="meta">${k}</span></div>`).join('');
+  document.getElementById('aiMode').textContent='AI 内容模式：'+(j.data.aiMode==='llm'?'真实大模型（已配置密钥）':'知识库组合（未配置 AI 密钥，仍产出可用真草稿）');
+}
+
+// 启动：若已有 token 尝试直接进入
+if(TOKEN){enter();} else {document.getElementById('login').style.display='flex';}
+</script>
+</body>
+</html>

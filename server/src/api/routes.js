@@ -14,6 +14,7 @@ import crmRoutes from './crmRoutes.js';
 import web3Routes from './web3Routes.js';
 import integrationRoutes from './integrationRoutes.js';
 import dashboardRoutes from './dashboardRoutes.js';
+import consoleRoutes from './consoleRoutes.js';
 import { authenticate } from '../middleware/auth.js';
 import { generateToken } from '../middleware/auth.js';
 
@@ -109,6 +110,9 @@ router.use('/integrations', integrationRoutes);
 
 // ==================== BI 数据中台（公开，免鉴权） ====================
 router.use('/dashboard', dashboardRoutes);
+
+// ==================== 运营后台控制台（需登录） ====================
+router.use('/console', authenticate, consoleRoutes);
 
 // ==================== 系统接口 ====================
 
