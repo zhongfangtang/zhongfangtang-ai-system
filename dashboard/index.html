@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中芳堂美业全域AI智能体系统 - BI数据中台</title>
+    <meta name="description" content="中芳堂美业全域AI智能体系统 BI 数据中台：流量、转化、营收与内容表现可视化看板。">
+    <link rel="stylesheet" href="public/dashboard.css">
+    <link rel="stylesheet" href="../assets/a11y.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <a href="#main" class="skip-link">跳到主要内容</a>
+
+    <!-- Toast 提示 -->
+    <div id="toast" class="toast"></div>
+
+    <!-- ==================== 顶部导航栏 ==================== -->
+    <nav class="navbar" aria-label="主导航">
+        <div class="navbar-brand">
+            <div class="navbar-logo">中</div>
+            <div class="navbar-title">
+                中芳堂<span>·</span>全域AI智能体系统
+            </div>
+        </div>
+        <div class="navbar-right">
+            <div class="time-selector" id="time-selector">
+                <button class="time-btn active" data-period="day">日视图</button>
+                <button class="time-btn" data-period="week">周视图</button>
+                <button class="time-btn" data-period="month">月视图</button>
+            </div>
+            <div class="navbar-info">
+                <span class="status-dot"></span>
+                <span>系统运行中</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ==================== 主内容区 ==================== -->
+    <main id="main" class="main-container" role="main">
+
+        <!-- ========== 核心指标卡片行 ========== -->
+        <div class="kpi-row">
+            <div class="kpi-card" id="kpi-exposure">
+                <div class="kpi-label">总曝光量</div>
+                <div class="kpi-value">--</div>
+                <div class="kpi-change">加载中...</div>
+            </div>
+            <div class="kpi-card" id="kpi-acquisition">
+                <div class="kpi-label">总获客数</div>
+                <div class="kpi-value">--</div>
+                <div class="kpi-change">加载中...</div>
+            </div>
+            <div class="kpi-card" id="kpi-conversion">
+                <div class="kpi-label">总转化数</div>
+                <div class="kpi-value">--</div>
+                <div class="kpi-change">加载中...</div>
+            </div>
+            <div class="kpi-card" id="kpi-revenue">
+                <div class="kpi-label">总成交额</div>
+                <div class="kpi-value gold">--</div>
+                <div class="kpi-change">加载中...</div>
+            </div>
+            <div class="kpi-card" id="kpi-roi">
+                <div class="kpi-label">ROI</div>
+                <div class="kpi-value gold">--</div>
+                <div class="kpi-change">加载中...</div>
+            </div>
+        </div>
+
+        <!-- ========== 平台数据对比 + 转化漏斗 ========== -->
+        <div class="dashboard-grid">
+
+            <!-- 平台数据对比表格 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">六大平台数据对比</span>
+                    <span class="section-subtitle">数据更新时间：实时</span>
+                </div>
+                <div class="card-body no-padding">
+                    <div class="platform-table-wrapper">
+                        <table class="platform-table">
+                            <thead>
+                                <tr>
+                                    <th>平台</th>
+                                    <th>粉丝数</th>
+                                    <th>内容数</th>
+                                    <th>曝光量</th>
+                                    <th>播放量</th>
+                                    <th>点赞</th>
+                                    <th>评论</th>
+                                    <th>分享</th>
+                                    <th>引流数</th>
+                                    <th>获客数</th>
+                                    <th>意向率</th>
+                                    <th>转化数</th>
+                                    <th>成交额</th>
+                                </tr>
+                            </thead>
+                            <tbody id="platform-table-body">
+                                <tr><td colspan="13" style="text-align:center;color:#6a6a80;padding:40px;">加载中...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 流量转化漏斗 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">流量转化漏斗</span>
+                    <span class="section-subtitle">曝光→成交全链路</span>
+                </div>
+                <div class="card-body">
+                    <div class="funnel-container">
+                        <div class="funnel-stages" id="funnel-stages-container">
+                            <div style="color:#6a6a80;text-align:center;padding:20px;">加载中...</div>
+                        </div>
+                    </div>
+                    <div class="chart-container small" style="margin-top:10px;">
+                        <canvas id="funnel-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ========== 趋势图 + 渠道分布 ========== -->
+        <div class="dashboard-grid">
+
+            <!-- 内容发布趋势 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">内容发布趋势</span>
+                    <span class="section-subtitle">近30天数据</span>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container large">
+                        <canvas id="trend-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 获客渠道分布 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">获客渠道分布</span>
+                    <span class="section-subtitle">各平台获客占比</span>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="channel-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ========== 用户画像 + 私域流量 ========== -->
+        <div class="dashboard-grid">
+
+            <!-- 用户画像 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">用户画像分析</span>
+                    <span class="section-subtitle">多维度用户特征</span>
+                </div>
+                <div class="card-body">
+                    <div class="profile-grid">
+                        <div class="profile-chart-item">
+                            <div class="profile-chart-title">用户能力雷达</div>
+                            <div class="chart-container small">
+                                <canvas id="radar-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="profile-chart-item">
+                            <div class="profile-chart-title">年龄分布</div>
+                            <div class="chart-container small">
+                                <canvas id="age-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="profile-chart-item">
+                            <div class="profile-chart-title">需求分布</div>
+                            <div class="chart-container small">
+                                <canvas id="demand-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="profile-chart-item" style="display:flex;align-items:center;justify-content:center;">
+                            <div style="text-align:center;">
+                                <div style="font-size:36px;color:#d4a853;font-weight:700;">28%</div>
+                                <div style="font-size:12px;color:#6a6a80;margin-top:4px;">高消费用户占比</div>
+                                <div style="font-size:36px;color:#5b9bd5;font-weight:700;margin-top:16px;">82分</div>
+                                <div style="font-size:12px;color:#6a6a80;margin-top:4px;">消费能力指数</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 私域流量池 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">私域流量池</span>
+                    <span class="section-subtitle">社群运营数据</span>
+                </div>
+                <div class="card-body">
+                    <div class="private-domain-stats" id="private-domain-stats">
+                        <div class="private-stat">
+                            <div class="private-stat-value">--</div>
+                            <div class="private-stat-label">私域总人数</div>
+                        </div>
+                        <div class="private-stat">
+                            <div class="private-stat-value">--</div>
+                            <div class="private-stat-label">本周新增</div>
+                        </div>
+                        <div class="private-stat">
+                            <div class="private-stat-value">--</div>
+                            <div class="private-stat-label">留存率</div>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="height:180px;">
+                        <canvas id="private-domain-chart"></canvas>
+                    </div>
+                    <div class="group-list" id="group-list" style="margin-top:12px;">
+                        <div style="color:#6a6a80;text-align:center;padding:10px;">加载中...</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ========== GEO搜索占位面板 ========== -->
+        <div class="dashboard-grid">
+            <div class="card card-full">
+                <div class="card-header">
+                    <span class="card-title">🔍 GEO搜索占位</span>
+                    <span class="section-subtitle">AI搜索引擎优化 · 关键词排名监控</span>
+                </div>
+                <div class="card-body">
+                    <div class="geo-stats-row" id="geo-stats">
+                        <div class="geo-stat">
+                            <div class="geo-stat-value gold">--</div>
+                            <div class="geo-stat-label">搜索展现量</div>
+                        </div>
+                        <div class="geo-stat">
+                            <div class="geo-stat-value">--</div>
+                            <div class="geo-stat-label">平均排名</div>
+                        </div>
+                        <div class="geo-stat">
+                            <div class="geo-stat-value">--</div>
+                            <div class="geo-stat-label">搜索点击率</div>
+                        </div>
+                        <div class="geo-stat">
+                            <div class="geo-stat-value">--</div>
+                            <div class="geo-stat-label">GEO友好度</div>
+                        </div>
+                        <div class="geo-stat">
+                            <div class="geo-stat-value">--</div>
+                            <div class="geo-stat-label">已优化内容</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:16px;margin-top:16px;">
+                        <div style="flex:1;">
+                            <h4 style="color:#d4a853;margin-bottom:8px;font-size:13px;">📈 关键词排名趋势 (TOP20)</h4>
+                            <div class="chart-container" style="height:200px;">
+                                <canvas id="geo-ranking-chart"></canvas>
+                            </div>
+                        </div>
+                        <div style="flex:1;">
+                            <h4 style="color:#d4a853;margin-bottom:8px;font-size:13px;">🎯 平台搜索占比</h4>
+                            <div class="chart-container" style="height:200px;">
+                                <canvas id="geo-platform-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="geo-keywords-list" style="margin-top:16px;">
+                        <h4 style="color:#d4a853;margin-bottom:8px;font-size:13px;">🏷 核心关键词表现</h4>
+                        <div style="color:#6a6a80;text-align:center;padding:10px;">加载中...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== 数据复盘报告 ========== -->
+        <div class="dashboard-grid-full">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title" id="report-title">数据复盘报告</span>
+                    <span class="section-subtitle">AI智能分析</span>
+                </div>
+                <div class="card-body">
+                    <div class="report-content">
+                        <div class="report-summary" id="report-summary">
+                            加载中...
+                        </div>
+                        <div>
+                            <div class="report-list highlights">
+                                <h4>✨ 亮点表现</h4>
+                                <ul id="report-highlights">
+                                    <li>加载中...</li>
+                                </ul>
+                            </div>
+                            <div class="report-list warnings" style="margin-top:16px;">
+                                <h4>⚠ 改进建议</h4>
+                                <ul id="report-warnings">
+                                    <li>加载中...</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ==================== 底部 ==================== -->
+    <footer class="footer" role="contentinfo">
+        <span>中芳堂</span> 美业全域AI智能体系统 · BI数据中台 v1.0
+        &nbsp;|&nbsp; 数据驱动 · 智能决策 · 全域增长
+    </footer>
+
+    <!-- 脚本加载 -->
+    <script src="public/api.js"></script>
+    <script src="public/dashboard.js"></script>
+</body>
+</html>

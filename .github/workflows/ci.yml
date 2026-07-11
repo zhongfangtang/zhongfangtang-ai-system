@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+# 复用并发，避免重复运行
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ============ 单元测试 + 语法检查 ============
+  test:
+    name: 单元测试 (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [18.x, 20.x]
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 配置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - name: 安装依赖
+        run: npm ci
+
+      - name: 语法检查 (node --check)
+        run: |
+          echo "扫描所有 JS/JS(ESM) 源文件..."
+          files=$(find src tests -name '*.js' -type f)
+          fail=0
+          for f in $files; do
+            if ! node --check "$f"; then
+              echo "❌ 语法错误: $f"
+              fail=1
+            fi
+          done
+          [ $fail -eq 0 ] && echo "✅ 全部文件语法检查通过"
+
+      - name: 运行单元测试 (node --test)
+        run: npm test
+        env:
+          NODE_ENV: test
+          JWT_SECRET: ci-test-secret
+          MONGODB_URI: mongodb://localhost:27017/zhongfangtang_test
+          REDIS_HOST: 127.0.0.1
+
+  # ============ Docker 镜像构建校验 ============
+  docker:
+    name: Docker 构建校验
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 构建 API 镜像 (仅校验，不推送)
+        run: docker build -f deploy/Dockerfile.server -t zhongfangtang-ai:ci server
+
+  # ============ 部署 (仅 main 分支，可选) ============
+  # 需要仓库 Secrets：DEPLOY_HOST / DEPLOY_USER / DEPLOY_KEY
+  # 以及 docker 镜像仓库登录步骤；此处留作模板，默认不触发推送。
+  deploy:
+    name: 生产部署 (main)
+    runs-on: ubuntu-latest
+    needs: [test, docker]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && vars.ENABLE_DEPLOY == 'true'
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      - name: 部署提示
+        run: echo "在 ENABLE_DEPLOY=true 且配置好 Secrets 后，此处执行 SSH 部署 / 镜像推送"

@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中芳堂 Web3 美业生态平台</title>
+    <meta name="description" content="中芳堂 Web3 美业生态：区块链存证、AI数字人直播、元宇宙交互与金融服务，赋能美业可信经营。">
+    <!-- Tailwind CSS (本地化离线) -->
+    <script src="assets/libs/tailwind.js"></script>
+    <!-- Font Awesome (本地化离线) -->
+    <link rel="stylesheet" href="assets/libs/all.min.css">
+    <!-- Three.js (本地化离线) -->
+    <script src="assets/libs/three.min.js"></script>
+    <!-- GSAP 动画库 (本地化离线) -->
+    <script src="assets/libs/gsap.min.js"></script>
+    <!-- Web3.js (本地化离线) -->
+    <script src="assets/libs/web3.min.js"></script>
+    <style>
+        /* 本地字体（免费开源 Noto Sans SC，完全离线零成本） */
+        @font-face {
+            font-family: 'Noto Sans SC';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url('assets/libs/fonts/noto-sans-sc-400.woff2') format('woff2');
+        }
+        @font-face {
+            font-family: 'Noto Sans SC';
+            font-style: normal;
+            font-weight: 700;
+            font-display: swap;
+            src: url('assets/libs/fonts/noto-sans-sc-700.woff2') format('woff2');
+        }
+
+        :root {
+            --primary-color: #0066cc;
+            --secondary-color: #ff6699;
+            --accent-color: #ffcc00;
+            --dark-bg: #0a192f;
+            --light-bg: #f8f9fa;
+            --text-light: #e6f1ff;
+            --text-dark: #172a46;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            overflow-x: hidden;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .card {
+            background: rgba(23, 42, 70, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 102, 204, 0.3);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary-color), #0099ff);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #0099ff, var(--primary-color));
+            transition: all 0.5s ease;
+            z-index: -1;
+        }
+        
+        .btn-primary:hover::before {
+            left: 0;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--secondary-color);
+            border: 2px solid var(--secondary-color);
+            border-radius: 30px;
+            padding: 10px 28px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+        
+        #hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+        }
+        
+        .section {
+            padding: 100px 0;
+            position: relative;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 50px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
+        }
+        
+        /* 导航栏样式 */
+        .navbar {
+            background: rgba(10, 25, 47, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar.scrolled {
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            padding: 10px 0;
+        }
+        
+        .nav-link {
+            color: var(--text-light);
+            margin: 0 15px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--secondary-color);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .nav-link:hover {
+            color: var(--secondary-color);
+        }
+        
+        /* 移动端菜单 */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            height: 100vh;
+            background: var(--dark-bg);
+            z-index: 1001;
+            padding: 50px 20px;
+            transition: all 0.5s ease;
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .mobile-menu.active {
+            right: 0;
+        }
+        
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+        }
+        
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* 功能卡片样式 */
+        .feature-card {
+            background: rgba(23, 42, 70, 0.6);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 100%;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 102, 204, 0.2);
+            border-color: var(--primary-color);
+        }
+        
+        .feature-card .icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        /* 数字人直播区域 */
+        .live-stream-container {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            height: 500px;
+            background: linear-gradient(135deg, rgba(0, 102, 204, 0.2), rgba(255, 102, 153, 0.2));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .live-stream-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('assets/placeholder.svg
+            background-size: cover;
+            opacity: 0.7;
+            z-index: -1;
+        }
+        
+        .live-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #ff0000;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+            }
+        }
+        
+        .stream-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+        
+        .stream-control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: white;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stream-control-btn:hover {
+            background: var(--primary-color);
+            transform: scale(1.1);
+        }
+        
+        /* 区块链存证区域 */
+        .blockchain-container {
+            background: rgba(23, 42, 70, 0.6);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .block-item {
+            background: rgba(0, 102, 204, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        
+        .block-item:hover {
+            background: rgba(0, 102, 204, 0.2);
+            transform: translateX(5px);
+        }
+        
+        .block-number {
+            font-size: 12px;
+            color: var(--accent-color);
+            margin-bottom: 5px;
+        }
+        
+        .block-data {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+        
+        /* 元宇宙体验区域 */
+        .metaverse-container {
+            position: relative;
+            height: 500px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(0, 102, 204, 0.2), rgba(255, 102, 153, 0.2));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .metaverse-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('assets/placeholder.svg
+            background-size: cover;
+            opacity: 0.7;
+            z-index: -1;
+        }
+        
+        .metaverse-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+        
+        .metaverse-btn {
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .metaverse-btn:hover {
+            background: var(--primary-color);
+            transform: translateY(-3px);
+        }
+        
+        /* 金融服务区域 */
+        .finance-card {
+            background: rgba(23, 42, 70, 0.6);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .finance-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 102, 204, 0.2);
+            border-color: var(--primary-color);
+        }
+        
+        .finance-icon {
+            font-size: 30px;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+        }
+        
+        /* 底部样式 */
+        .footer {
+            background: rgba(10, 25, 47, 0.9);
+            padding: 50px 0 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .footer-logo {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: var(--secondary-color);
+            padding-left: 5px;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .social-icon:hover {
+            background: var(--secondary-color);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .section {
+                padding: 60px 0;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .live-stream-container,
+            .metaverse-container {
+                height: 350px;
+            }
+            
+            .navbar-nav {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block !important;
+            }
+        }
+        
+        /* 加载动画 */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: var(--dark-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: all 0.5s ease;
+        }
+        
+        .loader.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .loader-circle {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 滚动动画 */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+        
+        .fade-in.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+
+        /* ============ 无障碍适配 (a11y) ============ */
+        /* 跳转链接：默认隐藏，键盘聚焦显示 */
+        .skip-link {
+            position: absolute;
+            left: -9999px;
+            top: auto;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            z-index: 9999;
+        }
+        .skip-link:focus,
+        .skip-link:focus-visible {
+            left: 12px;
+            top: 12px;
+            width: auto;
+            height: auto;
+            padding: 10px 18px;
+            background: var(--accent-color);
+            color: #0a192f;
+            border-radius: 8px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        /* 键盘焦点可见 */
+        a:focus-visible,
+        button:focus-visible,
+        input:focus-visible,
+        [tabindex]:focus-visible,
+        .btn-primary:focus-visible,
+        .nav-link:focus-visible {
+            outline: 3px solid var(--accent-color);
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+        /* 尊重减少动效偏好 */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.001ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+        /* 仅供读屏 */
+        .sr-only {
+            position: absolute;
+            width: 1px; height: 1px;
+            padding: 0; margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <a href="#main" class="skip-link">跳到主要内容</a>
+
+    <!-- 加载动画 -->
+    <div class="loader" aria-hidden="true">
+        <div class="loader-circle"></div>
+    </div>
+
+    <!-- 导航栏 -->
+    <nav class="navbar" aria-label="主导航">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center">
+                <a href="#" class="text-2xl font-bold text-white">
+                    <span class="gradient-text">中芳堂</span> Web3
+                </a>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="nav-link">首页</a>
+                    <a href="#features" class="nav-link">核心功能</a>
+                    <a href="#ai-live" class="nav-link">AI数字人</a>
+                    <a href="#metaverse" class="nav-link">元宇宙体验</a>
+                    <a href="#blockchain" class="nav-link">区块链存证</a>
+                    <a href="#finance" class="nav-link">金融服务</a>
+                    <button class="btn-primary">
+                        <i class="fas fa-wallet mr-2"></i>连接钱包
+                    </button>
+                </div>
+                
+                <button class="mobile-menu-btn md:hidden text-white text-2xl">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 移动端菜单 -->
+    <div class="menu-overlay"></div>
+    <div class="mobile-menu">
+        <button class="close-menu-btn absolute top-5 right-5 text-white text-2xl">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="flex flex-col space-y-6 mt-10">
+            <a href="#home" class="text-xl text-white hover:text-pink-400 transition-colors">首页</a>
+            <a href="#features" class="text-xl text-white hover:text-pink-400 transition-colors">核心功能</a>
+            <a href="#ai-live" class="text-xl text-white hover:text-pink-400 transition-colors">AI数字人</a>
+            <a href="#metaverse" class="text-xl text-white hover:text-pink-400 transition-colors">元宇宙体验</a>
+            <a href="#blockchain" class="text-xl text-white hover:text-pink-400 transition-colors">区块链存证</a>
+            <a href="#finance" class="text-xl text-white hover:text-pink-400 transition-colors">金融服务</a>
+            <button class="btn-primary mt-4">
+                <i class="fas fa-wallet mr-2"></i>连接钱包
+            </button>
+        </div>
+    </div>
+
+    <!-- 首页英雄区域 -->
+    <main id="main" role="main">
+    <section id="home" class="relative h-screen flex items-center">
+        <canvas id="hero-canvas" aria-hidden="true"></canvas>
+        <div class="container mx-auto px-4 z-10">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="fade-in">
+                    <h1 class="text-4xl md:text-6xl font-bold mb-6">
+                        Web3 美业<br>
+                        <span class="gradient-text">生态新未来</span>
+                    </h1>
+                    <p class="text-lg md:text-xl mb-8 text-gray-300">
+                        结合区块链存证、AI数字人直播、元宇宙交互与金融服务，
+                        打造美业行业可信、智能、沉浸式的全新体验。
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <button class="btn-primary">
+                            <i class="fas fa-rocket mr-2"></i>立即体验
+                        </button>
+                        <button class="btn-secondary">
+                            <i class="fas fa-play mr-2"></i>观看演示
+                        </button>
+                    </div>
+                    <div class="mt-12 flex items-center space-x-6">
+                        <div class="flex -space-x-2">
+                            <img src="assets/avatar-1.svg" class="w-10 h-10 rounded-full border-2 border-white" alt="用户头像">
+                            <img src="assets/avatar-2.svg" class="w-10 h-10 rounded-full border-2 border-white" alt="用户头像">
+                            <img src="assets/avatar-3.svg" class="w-10 h-10 rounded-full border-2 border-white" alt="用户头像">
+                        </div>
+                        <div>
+                            <div class="flex items-center">
+                                <div class="flex">
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star-half-alt text-yellow-400"></i>
+                                </div>
+                                <span class="ml-2 text-gray-300">4.8/5</span>
+                            </div>
+                            <p class="text-sm text-gray-400">来自 1000+ 满意用户</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:block fade-in">
+                    <img src="assets/placeholder.svg" alt="Web3美业平台" class="w-full rounded-2xl shadow-2xl transform hover:scale-105 transition-transform duration-500">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 核心功能区域 -->
+    <section id="features" class="section bg-gradient-to-b from-[#0a192f] to-[#112240]">
+        <div class="container mx-auto px-4">
+            <h2 class="section-title fade-in">核心功能</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Web3存证系统 -->
+                <div class="feature-card fade-in">
+                    <div class="icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">Web3 存证系统</h3>
+                    <p class="text-gray-300 mb-4">
+                        基于区块链技术的服务记录、产品溯源和资质认证存证，确保信息真实可信，解决美业服务效果争议。
+                    </p>
+                    <a href="#" class="text-blue-400 hover:text-blue-300 flex items-center">
+                        了解更多 <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+                
+                <!-- RWA凭证管理 -->
+                <div class="feature-card fade-in">
+                    <div class="icon">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">RWA 凭证管理</h3>
+                    <p class="text-gray-300 mb-4">
+                        将美容服务、产品权益数字化通证化，实现权益的安全流转与管理，提升用户体验与商业效率。
+                    </p>
+                    <a href="#" class="text-blue-400 hover:text-blue-300 flex items-center">
+                        了解更多 <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+                
+                <!-- AI数字人直播 -->
+                <div class="feature-card fade-in">
+                    <div class="icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">AI 数字人直播</h3>
+                    <p class="text-gray-300 mb-4">
+                        24小时不间断的虚拟主播直播带货、美业知识科普与个性化产品推荐，提升用户互动与转化率。
+                    </p>
+                    <a href="#" class="text-blue-400 hover:text-blue-300 flex items-center">
+                        了解更多 <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+                
+                <!-- 元宇宙轻量化交互 -->
+                <div class="feature-card fade-in">
+                    <div class="icon">
+                        <i class="fas fa-vr-cardboard"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">元宇宙轻量化交互</h3>
+                    <p class="text-gray-300 mb-4">
+                        3D虚拟美容院体验与AR试妆功能，让用户在线沉浸式体验美容服务，提升决策效率与满意度。
+                    </p>
+                    <a href="#" class="text-blue-400 hover:text-blue-300 flex items-center">
+                        了解更多 <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+                
+                <!-- 美业专属保险 -->
+                <div class="feature-card fade-in">
+                    <div class="icon">
+                        <i class="fas fa-file-medical-alt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">美业专属保险</h3>
+                    <p class="text-gray-300 mb-4">
+                        服务保障险、产品质量险等在线投保理赔服务，为用户提供全方位保障，降低消费风险。
+                    </p>
+                    <a href="#" class="text-blue-400 hover:text-blue-300 flex items-center">
+                        了解更多 <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+                
+                <!-- 灵活支付方案 -->
+                <div class="feature-card fade-in">
+                    <div class="icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">灵活支付方案</h3>
+                    <p class="text-gray-300 mb-4">
+                        分期支付、先享后付等金融服务，降低用户消费门槛，提升服务可及性与满意度。
+                    </p>
+                    <a href="#" class="text-blue-400 hover:text-blue-300 flex items-center">
+                        了解更多 <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+                
+                <!-- 积分兑换系统 -->
+                <div class="feature-card fade-in">
+                    <div class="icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">积分兑换系统</h3>
+                    <p class="text-gray-300 mb-4">
+                        消费积分累积与多样化兑换选项，增强用户粘性与忠诚度，促进持续消费。
+                    </p>
+                    <a href="#" class="text-blue-400 hover:text-blue-300 flex items-center">
+                        了解更多 <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+                
+                <!-- 盲盒互动营销 -->
+                <div class="feature-card fade-in">
+                    <div class="icon">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">盲盒互动营销</h3>
+                    <p class="text-gray-300 mb-4">
+                        数字/实物盲盒抽奖、收藏与交易功能，增加平台趣味性与用户参与度，提升品牌影响力。
+                    </p>
+                    <a href="#" class="text-blue-400 hover:text-blue-300 flex items-center">
+                        了解更多 <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+                
+                <!-- 链动2+1合规分销 -->
+                <div class="feature-card fade-in">
+                    <div class="icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">链动2+1合规分销</h3>
+                    <p class="text-gray-300 mb-4">
+                        多层级营销激励与佣金结算系统，合规高效地推动业务增长，实现多方共赢。
+                    </p>
+                    <a href="#" class="text-blue-400 hover:text-blue-300 flex items-center">
+                        了解更多 <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI数字人直播区域 -->
+    <section id="ai-live" class="section bg-[#0a192f]">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="fade-in">
+                    <h2 class="section-title text-left">AI 数字人直播</h2>
+                    <p class="text-lg text-gray-300 mb-8">
+                        我们的AI数字人主播全天候在线，为您提供专业的美业知识科普、产品推荐与实时互动服务，
+                        让您随时随地享受个性化的美容顾问体验。
+                    </p>
+                    <div class="space-y-6">
+                        <div class="flex items-start">
+                            <div class="bg-blue-500 rounded-full p-3 mr-4">
+                                <i class="fas fa-clock text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold mb-2">24小时不间断服务</h4>
+                                <p class="text-gray-400">随时随地获取专业美容建议，不受时间限制</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-pink-500 rounded-full p-3 mr-4">
+                                <i class="fas fa-brain text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold mb-2">智能个性化推荐</h4>
+                                <p class="text-gray-400">基于您的肤质数据与需求，提供定制化产品方案</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-yellow-500 rounded-full p-3 mr-4">
+                                <i class="fas fa-comments text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold mb-2">实时互动问答</h4>
+                                <p class="text-gray-400">解答您的美容疑问，提供专业建议与解决方案</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-primary mt-8">
+                        <i class="fas fa-video mr-2"></i>进入直播间
+                    </button>
+                </div>
+                <div class="live-stream-container fade-in">
+                    <div class="live-badge">
+                        <i class="fas fa-circle"></i> LIVE
+                    </div>
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                        <h3 class="text-2xl font-bold mb-4">虚拟美容顾问</h3>
+                        <p class="text-lg mb-6">正在直播：夏季护肤秘诀分享</p>
+                        <div class="flex justify-center">
+                            <button class="btn-primary">
+                                <i class="fas fa-play mr-2"></i>观看直播
+                            </button>
+                        </div>
+                    </div>
+                    <div class="stream-controls">
+                        <button class="stream-control-btn">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                        <button class="stream-control-btn">
+                            <i class="fas fa-comment"></i>
+                        </button>
+                        <button class="stream-control-btn">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                        <button class="stream-control-btn">
+                            <i class="fas fa-gift"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 元宇宙体验区域 -->
+    <section id="metaverse" class="section bg-gradient-to-b from-[#0a192f] to-[#112240]">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="order-2 md:order-1">
+                    <div class="metaverse-container fade-in">
+                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                            <h3 class="text-2xl font-bold mb-4">3D虚拟美容院</h3>
+                            <p class="text-lg mb-6">沉浸式体验，提前感受服务效果</p>
+                            <div class="flex justify-center">
+                                <button class="btn-primary">
+                                    <i class="fas fa-vr-cardboard mr-2"></i>开始体验
+                                </button>
+                            </div>
+                        </div>
+                        <div class="metaverse-controls">
+                            <button class="metaverse-btn">
+                                <i class="fas fa-map-marked-alt mr-2"></i>场馆导览
+                            </button>
+                            <button class="metaverse-btn">
+                                <i class="fas fa-magic mr-2"></i>AR试妆
+                            </button>
+                            <button class="metaverse-btn">
+                                <i class="fas fa-user-friends mr-2"></i>邀请好友
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-1 md:order-2 fade-in">
+                    <h2 class="section-title text-left">元宇宙轻量化交互</h2>
+                    <p class="text-lg text-gray-300 mb-8">
+                        通过3D虚拟美容院与AR试妆功能，让您足不出户即可体验专业美容服务，
+                        提前预览效果，做出更明智的消费决策。
+                    </p>
+                    <div class="space-y-6">
+                        <div class="flex items-start">
+                            <div class="bg-purple-500 rounded-full p-3 mr-4">
+                                <i class="fas fa-building text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold mb-2">3D虚拟美容院</h4>
+                                <p class="text-gray-400">沉浸式环境展示，提前了解服务流程与环境</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-green-500 rounded-full p-3 mr-4">
+                                <i class="fas fa-magic text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold mb-2">AR试妆功能</h4>
+                                <p class="text-gray-400">上传照片即可虚拟试妆，预览效果再决定购买</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-blue-500 rounded-full p-3 mr-4">
+                                <i class="fas fa-users text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold mb-2">社交互动体验</h4>
+                                <p class="text-gray-400">邀请好友一同体验，分享美容心得与体验</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 区块链存证区域 -->
+    <section id="blockchain" class="section bg-[#0a192f]">
+        <div class="container mx-auto px-4">
+            <h2 class="section-title fade-in">区块链存证系统</h2>
+            <div class="grid md:grid-cols-2 gap-12">
+                <div class="fade-in">
+                    <img src="assets/placeholder.svg" alt="区块链存证系统" class="w-full rounded-2xl shadow-2xl">
+                </div>
+                <div class="fade-in">
+                    <div class="blockchain-container h-full">
+                        <h3 class="text-2xl font-bold mb-6">服务记录与产品溯源</h3>
+                        <div class="space-y-6">
+                            <div class="block-item">
+                                <div class="block-number">区块 #001</div>
+                                <div class="block-data">
+                                    <p class="font-semibold">面部护理服务</p>
+                                    <p class="text-sm text-gray-400">时间: 2024-06-15 14:30</p>
+                                    <p class="text-sm text-gray-400">美容师: 张专业</p>
+                                    <p class="text-sm text-gray-400">时长: 60分钟</p>
+                                    <div class="mt-2 flex justify-between items-center">
+                                        <span class="text-xs text-gray-500">已确认</span>
+                                        <button class="text-blue-400 text-sm hover:underline">查看详情</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="block-item">
+                                <div class="block-number">区块 #002</div>
+                                <div class="block-data">
+                                    <p class="font-semibold">产品溯源 - 青春精华液</p>
+                                    <p class="text-sm text-gray-400">生产批次: 20240501</p>
+                                    <p class="text-sm text-gray-400">原料来源: 有机认证</p>
+                                    <p class="text-sm text-gray-400">生产日期: 2024-05-01</p>
+                                    <div class="mt-2 flex justify-between items-center">
+                                        <span class="text-xs text-gray-500">已验证</span>
+                                        <button class="text-blue-400 text-sm hover:underline">查看详情</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="block-item">
+                                <div class="block-number">区块 #003</div>
+                                <div class="block-data">
+                                    <p class="font-semibold">美容师资质认证</p>
+                                    <p class="text-sm text-gray-400">姓名: 李美容</p>
+                                    <p class="text-sm text-gray-400">证书: 高级美容师</p>
+                                    <p class="text-sm text-gray-400">发证机构: 国家美容协会</p>
+                                    <div class="mt-2 flex justify-between items-center">
+                                        <span class="text-xs text-gray-500">已认证</span>
+                                        <button class="text-blue-400 text-sm hover:underline">查看详情</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-8 glass-style" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:16px">
+                            <label for="zft-verify-hash" class="block text-sm text-gray-300 mb-2">链上存证验证</label>
+                            <div class="flex gap-2">
+                                <input id="zft-verify-hash" type="text" inputmode="text" placeholder="粘贴存证哈希 0x..." class="flex-1 bg-[#0a192f] border border-gray-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="存证哈希输入框" aria-describedby="zft-verify-result">
+                                <button id="zft-verify-btn" type="button" class="btn-primary whitespace-nowrap">验证</button>
+                            </div>
+                            <p id="zft-verify-result" class="text-xs mt-2 text-gray-400" role="status" aria-live="polite">输入内容哈希可链上验证真伪（需后端 AI 服务 :3001 已启用 WEB3）</p>
+                        </div>
+
+                        <div class="mt-4">
+                            <button class="btn-primary w-full">
+                                <i class="fas fa-search mr-2"></i>查询更多记录
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 金融服务区域 -->
+    <section id="finance" class="section bg-gradient-to-b from-[#0a192f] to-[#112240]">
+        <div class="container mx-auto px-4">
+            <h2 class="section-title fade-in">金融服务</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 灵活支付方案 -->
+                <div class="finance-card fade-in">
+                    <div class="finance-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">灵活支付方案</h3>
+                    <p class="text-gray-300 mb-6">
+                        提供分期支付、先享后付等多种灵活支付方式，降低消费门槛，让美丽触手可及。
+                    </p>
+                    <ul class="space-y-3 mb-6">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>0首付分期，最长24期</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>先享后付，满意再付款</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>低息优惠，无隐藏费用</span>
+                        </li>
+                    </ul>
+                    <button class="btn-primary w-full">
+                        <i class="fas fa-calculator mr-2"></i>计算分期
+                    </button>
+                </div>
+                
+                <!-- 美业专属保险 -->
+                <div class="finance-card fade-in">
+                    <div class="finance-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">美业专属保险</h3>
+                    <p class="text-gray-300 mb-6">
+                        专为美业服务设计的保险产品，涵盖服务效果保障、产品质量保障等多个方面。
+                    </p>
+                    <ul class="space-y-3 mb-6">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>服务效果不满意赔付</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>产品质量问题保障</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>快速理赔，无忧消费</span>
+                        </li>
+                    </ul>
+                    <button class="btn-primary w-full">
+                        <i class="fas fa-file-contract mr-2"></i>查看保险详情
+                    </button>
+                </div>
+                
+                <!-- 供应链金融联动 -->
+                <div class="finance-card fade-in">
+                    <div class="finance-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">供应链金融联动</h3>
+                    <p class="text-gray-300 mb-6">
+                        连接供应商与商家，提供订单融资、库存融资等金融服务，促进产业链健康发展。
+                    </p>
+                    <ul class="space-y-3 mb-6">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>订单融资，加速资金周转</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>库存融资，优化资金结构</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>信用评估，降低融资成本</span>
+                        </li>
+                    </ul>
+                    <button class="btn-primary w-full">
+                        <i class="fas fa-chart-line mr-2"></i>了解融资方案
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    </main>
+
+    <!-- 底部区域 -->
+    <footer class="footer" role="contentinfo">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="footer-logo">
+                        <span class="gradient-text">中芳堂</span> Web3
+                    </div>
+                    <p class="text-gray-400 mb-6">
+                        打造美业行业可信、智能、沉浸式的全新体验，引领美业数字化转型。
+                    </p>
+                    <div class="social-icons">
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-weixin"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-weibo"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">产品服务</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Web3存证系统</a></li>
+                        <li><a href="#">RWA凭证管理</a></li>
+                        <li><a href="#">AI数字人直播</a></li>
+                        <li><a href="#">元宇宙体验</a></li>
+                        <li><a href="#">金融服务</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">关于我们</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">公司简介</a></li>
+                        <li><a href="#">团队介绍</a></li>
+                        <li><a href="#">合作伙伴</a></li>
+                        <li><a href="#">加入我们</a></li>
+                        <li><a href="#">联系方式</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">帮助中心</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">常见问题</a></li>
+                        <li><a href="#">使用教程</a></li>
+                        <li><a href="#">隐私政策</a></li>
+                        <li><a href="#">用户协议</a></li>
+                        <li><a href="#">意见反馈</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2024 湖北中芳堂美业生物科技发展有限责任公司. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 加载动画
+            setTimeout(function() {
+                document.querySelector('.loader').classList.add('fade-out');
+                setTimeout(function() {
+                    document.querySelector('.loader').style.display = 'none';
+                }, 500);
+            }, 1500);
+            
+            // 导航栏滚动效果
+            window.addEventListener('scroll', function() {
+                const navbar = document.querySelector('.navbar');
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+            
+            // 滚动动画
+            const fadeElements = document.querySelectorAll('.fade-in');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            fadeElements.forEach(element => {
+                observer.observe(element);
+            });
+            
+            // 移动端菜单
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const closeMenuBtn = document.querySelector('.close-menu-btn');
+            const mobileMenu = document.querySelector('.mobile-menu');
+            const menuOverlay = document.querySelector('.menu-overlay');
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                mobileMenu.classList.add('active');
+                menuOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            function closeMenu() {
+                mobileMenu.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            
+            closeMenuBtn.addEventListener('click', closeMenu);
+            menuOverlay.addEventListener('click', closeMenu);
+            
+            // 平滑滚动
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                        
+                        // 如果是移动端，点击后关闭菜单
+                        if (window.innerWidth < 768) {
+                            closeMenu();
+                        }
+                    }
+                });
+            });
+            
+            // 初始化 Three.js 背景
+            initThreeBackground();
+            
+            // 模拟区块链数据
+            simulateBlockchainData();
+            
+            // 模拟 AI 数字人直播
+            simulateAILiveStream();
+        });
+        
+        // Three.js 背景动画
+        function initThreeBackground() {
+            const canvas = document.getElementById('hero-canvas');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            
+            const renderer = new THREE.WebGLRenderer({
+                canvas: canvas,
+                alpha: true,
+                antialias: true
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            
+            // 创建粒子系统
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 1500;
+            
+            const posArray = new Float32Array(particlesCount * 3);
+            
+            for (let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 10;
+            }
+            
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.02,
+                color: 0x0066cc,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+            
+            // 添加光线
+            const light = new THREE.DirectionalLight(0xffffff, 1);
+            light.position.set(0, 0, 1);
+            scene.add(light);
+            
+            camera.position.z = 5;
+            
+            // 动画循环
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                particlesMesh.rotation.y += 0.001;
+                particlesMesh.rotation.x += 0.0005;
+                
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+            
+            // 响应窗口大小变化
+            window.addEventListener('resize', function() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+        
+        // 模拟区块链数据
+        function simulateBlockchainData() {
+            const blockItems = document.querySelectorAll('.block-item');
+            
+            blockItems.forEach((block, index) => {
+                setTimeout(() => {
+                    block.style.opacity = '1';
+                    block.style.transform = 'translateX(0)';
+                }, index * 300);
+            });
+        }
+        
+        // 模拟 AI 数字人直播
+        function simulateAILiveStream() {
+            const liveStreamContainer = document.querySelector('.live-stream-container');
+            const streamControls = document.querySelector('.stream-controls');
+            
+            // 模拟直播互动
+            setInterval(() => {
+                const randomAction = Math.floor(Math.random() * 3);
+                
+                switch(randomAction) {
+                    case 0:
+                        // 模拟点赞
+                        const likeBtn = streamControls.querySelector('.fa-heart').parentElement;
+                        likeBtn.style.transform = 'scale(1.3)';
+                        likeBtn.style.color = '#ff6699';
+                        setTimeout(() => {
+                            likeBtn.style.transform = 'scale(1)';
+                            likeBtn.style.color = 'white';
+                        }, 300);
+                        break;
+                    case 1:
+                        // 模拟评论
+                        const commentBtn = streamControls.querySelector('.fa-comment').parentElement;
+                        commentBtn.style.transform = 'scale(1.3)';
+                        commentBtn.style.color = '#0066cc';
+                        setTimeout(() => {
+                            commentBtn.style.transform = 'scale(1)';
+                            commentBtn.style.color = 'white';
+                        }, 300);
+                        break;
+                    case 2:
+                        // 模拟礼物
+                        const giftBtn = streamControls.querySelector('.fa-gift').parentElement;
+                        giftBtn.style.transform = 'scale(1.3)';
+                        giftBtn.style.color = '#ffcc00';
+                        setTimeout(() => {
+                            giftBtn.style.transform = 'scale(1)';
+                            giftBtn.style.color = 'white';
+                        }, 300);
+                        break;
+                }
+            }, 5000);
+        }
+        
+        // ========== 中芳堂跳转配置（请填入真实链接） ==========
+        // 💡 低成本提示：如需真实 Web3 上链，可用 Sepolia 测试网（免费）部署存证合约，
+        //    主网部署 Gas 费一次性约 ¥300-800，非必需。
+        const ZFT_CONFIG = {
+            weixin: 'https://work.weixin.qq.com',   // 企业微信 / 客服
+            miniprogram: '#',                         // 微信小程序路径
+            live: 'https://work.weixin.qq.com',       // 直播 / 企微
+            phone: '13227282079',                     // 联系电话
+            apiBase: 'http://localhost:3001'          // 后端 AI 服务地址（链上验证用）
+        };
+        // 统一跳转
+        function zftGoto(url) {
+            if (url && url !== '#') window.open(url, '_blank');
+        }
+
+        // 链上存证验证（对接后端 API，失败则提示演示模式）
+        const ZFT_API = { base: ZFT_CONFIG.apiBase || 'http://localhost:3001' };
+        async function zftVerifyOnChain() {
+            const input = document.getElementById('zft-verify-hash');
+            const result = document.getElementById('zft-verify-result');
+            if (!input || !result) return;
+            const hash = (input.value || '').trim();
+            if (!hash) {
+                result.textContent = '请先输入存证哈希';
+                result.style.color = '#f59e0b';
+                return;
+            }
+            result.textContent = '验证中...';
+            result.style.color = '#60a5fa';
+            try {
+                const resp = await fetch(`${ZFT_API.base}/api/v1/web3/verify?hash=${encodeURIComponent(hash)}`);
+                const json = await resp.json();
+                const d = json.data || {};
+                if (d.verified === true) {
+                    result.textContent = `✅ 已在链上存证（区块时间 ${new Date((d.timestamp || 0) * 1000).toLocaleString()}）`;
+                    result.style.color = '#34d399';
+                } else if (d.verified === false) {
+                    result.textContent = '❌ 未找到链上存证';
+                    result.style.color = '#f87171';
+                } else {
+                    result.textContent = 'ℹ️ 链上验证未启用（后端未配置 WEB3_*），当前为演示模式';
+                    result.style.color = '#94a3b8';
+                }
+            } catch (e) {
+                result.textContent = '⚠️ 无法连接后端（演示模式），请先启动 AI 服务 :3001';
+                result.style.color = '#94a3b8';
+            }
+        }
+
+        // 链上验证按钮绑定
+        const verifyBtn = document.getElementById('zft-verify-btn');
+        if (verifyBtn) verifyBtn.addEventListener('click', zftVerifyOnChain);
+        const verifyInput = document.getElementById('zft-verify-hash');
+        if (verifyInput) verifyInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') zftVerifyOnChain(); });
+
+        // 连接钱包 → 跳转企微
+        document.querySelectorAll('.btn-primary').forEach(button => {
+            if (button.textContent.includes('连接钱包')) {
+                button.addEventListener('click', () => zftGoto(ZFT_CONFIG.weixin));
+            }
+        });
+
+        // AI数字人直播 → 跳转直播 / 企微
+        document.querySelectorAll('.btn-primary').forEach(button => {
+            if (button.textContent.includes('进入直播间') || button.textContent.includes('观看直播')) {
+                button.addEventListener('click', () => zftGoto(ZFT_CONFIG.live));
+            }
+        });
+
+        // 元宇宙体验 / AR试妆 → 跳转小程序
+        document.querySelectorAll('.btn-primary').forEach(button => {
+            if (button.textContent.includes('开始体验') || button.textContent.includes('AR试妆')) {
+                button.addEventListener('click', () => zftGoto(ZFT_CONFIG.miniprogram));
+            }
+        });
+
+        // 区块链存证查询 → 跳转小程序
+        document.querySelectorAll('.btn-primary').forEach(button => {
+            if (button.textContent.includes('查询更多记录')) {
+                button.addEventListener('click', () => zftGoto(ZFT_CONFIG.miniprogram));
+            }
+        });
+
+        // 金融服务 → 跳转企微
+        document.querySelectorAll('.btn-primary').forEach(button => {
+            if (button.textContent.includes('计算分期') || button.textContent.includes('查看保险') || button.textContent.includes('了解融资')) {
+                button.addEventListener('click', () => zftGoto(ZFT_CONFIG.weixin));
+            }
+        });
+
+        // Hero区：立即体验 → 小程序；观看演示 → 直播
+        document.querySelectorAll('.btn-primary').forEach(button => {
+            if (button.textContent.includes('立即体验')) {
+                button.addEventListener('click', () => zftGoto(ZFT_CONFIG.miniprogram));
+            }
+        });
+        document.querySelectorAll('.btn-secondary').forEach(button => {
+            if (button.textContent.includes('观看演示')) {
+                button.addEventListener('click', () => zftGoto(ZFT_CONFIG.live));
+            }
+        });
+    </script>
+</body>
+</html>

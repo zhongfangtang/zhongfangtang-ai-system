@@ -1,0 +1,72 @@
+/* =============================================================
+ * 中芳堂 · 无障碍适配样式（a11y）
+ * 适用：index.html / dashboard / brand 等前端页面共享
+ * 原则：键盘可达、焦点可见、尊重减少动效偏好、语义清晰
+ * ============================================================= */
+
+/* 1. 跳转链接：默认视觉隐藏，键盘聚焦时显示在左上角 */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  z-index: 9999;
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  left: 8px;
+  top: 8px;
+  width: auto;
+  height: auto;
+  padding: 10px 16px;
+  background: #d4a853;
+  color: #0f0f1a;
+  border-radius: 8px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* 2. 键盘焦点可见：所有可聚焦元素显示高对比描边 */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible,
+.card:focus-visible {
+  outline: 3px solid #d4a853;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* 3. 尊重「减少动态效果」系统偏好 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 4. 仅供屏幕阅读器（视觉隐藏但可被读屏软件读取） */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 5. 基础可读性：保证正文最小字号与行高 */
+body {
+  line-height: 1.6;
+}

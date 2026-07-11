@@ -1,0 +1,808 @@
+{
+  "version": "2.0.0",
+  "systemName": "中芳堂美业全域AI智能体系统",
+  "lastUpdated": "2026-07-11",
+  "description": "中芳堂全域AI智能体系统v2，覆盖体质辨证、内容生产、客户跟进、全域截流、数据分析、ERP同步、视频制作、GEO搜索占位八大业务域",
+
+  "agents": [
+    {
+      "id": "tizhi-agent",
+      "name": "体质辨证师·小芳",
+      "description": "九种体质辨证、方案推荐、精油膏方搭配、面诊舌诊分析、腕家H1手表数据分析",
+      "version": "2.0.0",
+      "promptFile": "tizhi-agent-v2.md",
+      "trigger": "user_message",
+      "channels": ["miniprogram", "wecom", "service_account"],
+      "model": "gemini-2.5-pro",
+      "temperature": 0.7,
+      "maxTokens": 8192,
+      "contextWindow": 128000,
+      "thinkingMode": true,
+      "knowledgeBase": [
+        "九种体质辨识标准（平和/气虚/阳虚/阴虚/痰湿/湿热/血瘀/气郁/特禀）",
+        "九体辨识复方精油配方与用法（每体对应3-5款复方精油）",
+        "伍申堂八款膏方（申悦疏肝解郁/申化健脾祛湿/申润滋阴润燥/申清清热凉血/申元补肾益精/申阳温阳散寒/申和调和气血/申颜美容养颜）",
+        "面诊五区五脏对应（额头→心/左脸颊→肝/鼻头→脾/右脸颊→肺/下巴→肾）",
+        "舌诊五区五脏对应（舌尖→心/舌边→肝/舌中→脾/舌前→肺/舌根→肾）",
+        "28种植物精油功效与归经（花/草叶/木脂/果皮/香料根茎五大类）",
+        "五脏六腑功能与五行生克关系",
+        "五气状态识别（风寒暑湿燥）",
+        "24节气养生要点与体质对应关系",
+        "客户四类分层标准（A类黄金/B类远程/C类到店/D类潜力）",
+        "到店项目体系与价格（体质调理/经络疏通/面部护理/精油SPA等）",
+        "腕家H1手表数据解读（睡眠质量/心率变异性/血氧/压力指数/体温趋势）",
+        "美罗内调三阶段方案（清/调/补）",
+        "芝参护肤品居家护理方案（洁面/精华/面膜/防晒四步）",
+        "纤姿达辅助产品（纤姿达植物饮/纤姿达益生菌/纤姿达代餐粉）",
+        "中西医结合辨证知识库",
+        "体质-精油-膏方-膳食-运动综合方案知识图谱"
+      ],
+      "rules": [
+        "测评报告末尾必须包含合规免责声明",
+        "禁止使用医疗功效词（治疗/治愈/根治/诊断/处方/用药/疗程/疗效保证）",
+        "使用调理/养护/改善/舒缓/平衡替代医疗用语",
+        "精油配方必须注明外用和稀释提醒（面部精油5%浓度，身体精油3-5%浓度）",
+        "柑橘类精油（甜橙/柠檬/佛手柑/葡萄柚）必须提醒光敏性，建议晚间使用",
+        "孕妇/哺乳期/过敏体质必须标注慎用提醒",
+        "腕家H1数据异常（心率<50或>120/血氧<92%）需标注建议就医",
+        "所有方案标注「个体差异存在，效果因人而异」",
+        "测评结果需区分轻重缓急，优先处理主要体质偏颇",
+        "面诊舌诊结果仅供调理参考，不得作为诊断依据"
+      ],
+      "outputConfig": {
+        "format": "structured_json",
+        "sections": [
+          "user_profile",
+          "tizhi_assessment",
+          "facial_analysis",
+          "tongue_analysis",
+          "watch_data_analysis",
+          "essential_oil_plan",
+          "paste_plan",
+          "daily_care_plan",
+          "dietary_advice",
+          "exercise_advice",
+          "risk_warnings",
+          "compliance_note"
+        ]
+      },
+      "multiModal": {
+        "inputTypes": ["text", "image", "voice"],
+        "imageAnalysis": ["face", "tongue", "skin"],
+        "watchData": ["heart_rate", "spo2", "sleep", "stress", "temperature"]
+      }
+    },
+    {
+      "id": "content-agent",
+      "name": "内容总监·小芳创作",
+      "description": "全平台内容生产：抖音/快手/B站脚本、小红书笔记、视频号文案、百家号文章、朋友圈文案、服务号推文",
+      "version": "2.0.0",
+      "promptFile": "content-agent-v2.md",
+      "trigger": "scheduled",
+      "schedule": "0 7 * * *",
+      "channels": ["cloud_function", "douyin_api", "baijiahao_api"],
+      "model": "gemini-2.5-pro",
+      "temperature": 0.8,
+      "maxTokens": 16384,
+      "contextWindow": 128000,
+      "thinkingMode": true,
+      "knowledgeBase": [
+        "28种植物精油体系（五大类）",
+        "九种体质养生知识",
+        "24节气养生要点",
+        "中芳堂产品体系（精油/膏方/纯露/芝参/纤姿达/腕家H1）",
+        "到店服务项目详情",
+        "客户案例素材库（已脱敏）",
+        "热门话题词库（分平台维护）",
+        "竞品内容分析库",
+        "平台内容规则（抖音/快手/B站/小红书/视频号/百家号）",
+        "中医芳疗科普知识",
+        "美业行业热点事件库",
+        "宜昌本地生活话题（三峡/宜昌美食/伍家岗/宜昌生活）"
+      ],
+      "rules": [
+        "每天生成3条抖音脚本+2篇小红书笔记+1篇百家号文章+2条朋友圈+1条视频号文案",
+        "所有内容必须引导用户进入小程序做AI体质测评",
+        "禁用医疗功效词和违规营销词",
+        "内容末尾添加合规声明：'本公司业务属于美容美体养生服务，不涉及医疗服务。本内容由AI生成，仅供参考。'",
+        "语言亲切专业，不晦涩，符合中医芳疗调性",
+        "每平台内容适配其风格：抖音活泼/小红书精致/百家号深度/快手接地气/B站干货/视频号亲切",
+        "敏感话题（疾病/治疗/药物）自动过滤",
+        "每周一生成周内容规划表，提交人工审核",
+        "内容发布后24小时自动采集数据反馈，优化后续创作",
+        "品牌调性统一：温暖/专业/可信/中式美学"
+      ],
+      "outputConfig": {
+        "platforms": {
+          "douyin": {
+            "dailyCount": 3,
+            "format": "short_video_script",
+            "duration": "30-60s",
+            "hashtags": "auto_generate",
+            "autoPublish": true
+          },
+          "kuaishou": {
+            "dailyCount": 2,
+            "format": "short_video_script",
+            "duration": "30-90s",
+            "hashtags": "auto_generate",
+            "autoPublish": true
+          },
+          "xiaohongshu": {
+            "dailyCount": 2,
+            "format": "note_with_images",
+            "imageCount": "3-9",
+            "hashtags": "auto_generate",
+            "autoPublish": false
+          },
+          "bilibili": {
+            "weeklyCount": 3,
+            "format": "long_video_script",
+            "duration": "3-10min",
+            "autoPublish": false
+          },
+          "shipinhao": {
+            "dailyCount": 1,
+            "format": "short_video_script",
+            "duration": "30-60s",
+            "autoPublish": false
+          },
+          "baijiahao": {
+            "dailyCount": 1,
+            "format": "article",
+            "wordCount": "800-2000",
+            "autoPublish": true
+          },
+          "wecom_moments": {
+            "dailyCount": 2,
+            "format": "short_text_with_image",
+            "autoPublish": true
+          },
+          "service_account": {
+            "weeklyCount": 4,
+            "format": "article",
+            "wordCount": "1000-3000",
+            "autoPublish": true
+          }
+        }
+      },
+      "approvalWorkflow": {
+        "enabled": true,
+        "reviewer": "屈兵",
+        "autoApproveIf": "compliance_score > 0.95 && sensitivity_level === 'low'",
+        "requireManualIf": "compliance_score < 0.85 || sensitivity_level === 'high'",
+        "reviewChannel": "wecom"
+      }
+    },
+    {
+      "id": "followup-agent",
+      "name": "客户关系经理·小芳跟进",
+      "description": "自动化客户跟进：定时触达、券码管理、复购激活、生日关怀、流失预警、节气养生推送",
+      "version": "2.0.0",
+      "promptFile": "followup-agent-v2.md",
+      "trigger": "scheduled",
+      "schedule": "0 */4 * * *",
+      "channels": ["cloud_function", "wecom", "service_account", "sms"],
+      "model": "gemini-2.5-flash",
+      "temperature": 0.5,
+      "maxTokens": 4096,
+      "contextWindow": 128000,
+      "knowledgeBase": [
+        "客户四类分层策略与跟进节奏",
+        "到店项目体系与价格",
+        "券码规则（新客体验券/复购券/节气券/生日券/推荐券）",
+        "跟进话术模板库（分体质/分场景/分阶段）",
+        "节气养生知识库",
+        "异常处理规则（投诉/退款/医疗问题/差评）",
+        "客户生命周期模型（新客→体验→复购→忠诚→休眠→流失）",
+        "RFM客户价值模型",
+        "流失预警模型（沉默天数/消费频率/互动率）",
+        "生日关怀方案库",
+        "节假日营销日历",
+        "宜昌本地活动日历"
+      ],
+      "rules": [
+        "每位客户每天最多1条主动消息",
+        "投诉/退款/医疗问题立即标记人工处理，1小时内响应",
+        "所有消息末尾添加合规声明",
+        "券码有效期7天，过期前3天提醒，过期后1天发送新券",
+        "沉默30天自动触发节气关怀",
+        "沉默60天自动触发深度唤醒（电话+企微+优惠券组合）",
+        "沉默90天标记为流失风险，转入低优先级跟进",
+        "A类客户每3天跟进1次，B类客户每7天，C类每14天，D类每30天",
+        "到店后24小时自动发送体验回访问卷",
+        "生日前3天自动发送生日祝福+专属优惠券",
+        "禁止在21:00-09:00期间发送消息",
+        "禁止使用催促/焦虑营销话术"
+      ],
+      "outputConfig": {
+        "followupTypes": {
+          "tizhi_test_complete": {
+            "delay": "immediate",
+            "template": "tizhi_result_followup",
+            "priority": "high"
+          },
+          "coupon_issued": {
+            "delay": "0h",
+            "template": "coupon_received",
+            "priority": "high"
+          },
+          "coupon_expiring": {
+            "delay": "3d_before_expiry",
+            "template": "coupon_reminder",
+            "priority": "medium"
+          },
+          "coupon_expired": {
+            "delay": "1d_after_expiry",
+            "template": "new_coupon_offer",
+            "priority": "medium"
+          },
+          "silent_30d": {
+            "delay": "30d_after_last_interaction",
+            "template": "solar_term_care",
+            "priority": "medium"
+          },
+          "silent_60d": {
+            "delay": "60d_after_last_interaction",
+            "template": "deep_reactivation",
+            "priority": "high"
+          },
+          "birthday": {
+            "delay": "3d_before_birthday",
+            "template": "birthday_blessing",
+            "priority": "high"
+          },
+          "post_visit": {
+            "delay": "24h_after_visit",
+            "template": "experience_feedback",
+            "priority": "medium"
+          },
+          "seasonal_care": {
+            "schedule": "solar_term_based",
+            "template": "seasonal_tizhi_care",
+            "priority": "low"
+          }
+        }
+      },
+      "crmIntegration": {
+        "syncDirection": "bidirectional",
+        "syncFrequency": "real_time",
+        "customerFields": [
+          "name", "phone", "wechat_id", "tizhi_type", "customer_level",
+          "last_visit", "total_spent", "tags", "source", "birthday",
+          "watch_data", "visit_history", "coupon_history", "followup_log"
+        ]
+      }
+    },
+    {
+      "id": "interception-agent",
+      "name": "全域截流官·小芳获客",
+      "description": "六大平台评论区/问答区监控，关键词识别，自动互动，意向用户标记，私域引流",
+      "version": "1.0.0",
+      "promptFile": "interception-agent.md",
+      "trigger": "scheduled",
+      "schedule": "*/15 * * * *",
+      "channels": ["cloud_function", "douyin_api", "xiaohongshu_api", "kuaishou_api", "bilibili_api", "baijiahao_api"],
+      "model": "gemini-2.5-flash",
+      "temperature": 0.6,
+      "maxTokens": 4096,
+      "contextWindow": 128000,
+      "knowledgeBase": [
+        "截流关键词词库（养生/护肤/美体/肩颈/亚健康/减肥/祛湿/长痘/敏感肌等）",
+        "屏蔽词库（医疗功效词/竞品名/违规词）",
+        "分平台互动话术模板库",
+        "意向用户评分模型",
+        "竞品账号列表",
+        "热门话题标签库",
+        "平台合规规则（各平台评论/私信规则）",
+        "中芳堂产品与服务体系",
+        "九种体质与常见症状对应关系"
+      ],
+      "rules": [
+        "每15分钟扫描一次各平台评论区",
+        "单账号每小时互动不超过20条，单日不超过100条",
+        "互动间隔随机2-5分钟，模拟人工行为",
+        "负面评论/质疑评论不回复，仅标记人工",
+        "含竞品名的评论自动跳过",
+        "含医疗功效词的评论不回复",
+        "互动话术必须自然、有价值、不过度营销",
+        "意向度>60分的用户自动标记并推送至CRM",
+        "意向度>80分的用户1小时内人工跟进",
+        "每周生成截流效果周报",
+        "禁止与竞品官方账号互动",
+        "禁止在评论区留下联系方式"
+      ],
+      "interceptionConfig": {
+        "platforms": {
+          "douyin": {
+            "scanTargets": ["own_comments", "competitor_comments", "hot_topic_comments", "same_city_videos"],
+            "scanFrequency": 15,
+            "maxDailyInteractions": 100,
+            "autoReplyEnabled": true,
+            "replyStrategy": "warm_lead"
+          },
+          "xiaohongshu": {
+            "scanTargets": ["own_notes", "hot_topic_notes", "same_city_notes", "skincare_notes"],
+            "scanFrequency": 30,
+            "maxDailyInteractions": 50,
+            "autoReplyEnabled": false,
+            "replyStrategy": "assisted"
+          },
+          "kuaishou": {
+            "scanTargets": ["own_videos", "hot_topic_videos", "same_city_videos"],
+            "scanFrequency": 15,
+            "maxDailyInteractions": 80,
+            "autoReplyEnabled": true,
+            "replyStrategy": "warm_lead"
+          },
+          "bilibili": {
+            "scanTargets": ["own_videos", "health_wellness_videos", "beauty_videos"],
+            "scanFrequency": 60,
+            "maxDailyInteractions": 30,
+            "autoReplyEnabled": false,
+            "replyStrategy": "value_first"
+          },
+          "baijiahao": {
+            "scanTargets": ["own_articles", "health_articles", "wellness_articles"],
+            "scanFrequency": 60,
+            "maxDailyInteractions": 20,
+            "autoReplyEnabled": true,
+            "replyStrategy": "expert_tone"
+          },
+          "shipinhao": {
+            "scanTargets": ["own_videos", "wechat_moments"],
+            "scanFrequency": 60,
+            "maxDailyInteractions": 30,
+            "autoReplyEnabled": false,
+            "replyStrategy": "trust_based"
+          }
+        },
+        "keywordConfig": {
+          "highIntent": ["体质调理", "中医调理", "精油推荐", "肩颈酸痛怎么办", "失眠怎么办", "皮肤暗沉", "反复长痘", "湿气重", "减肥瘦身", "亚健康", "宜昌SPA", "宜昌美容"],
+          "mediumIntent": ["养生", "护肤", "精油", "按摩", "调理", "美容", "SPA", "艾灸", "拔罐", "刮痧", "健康", "皮肤", "痘痘", "敏感肌"],
+          "lowIntent": ["放松", "护理", "保养", "生活", "美丽", "好物", "推荐", "体验"],
+          "negativeKeywords": ["骗子", "忽悠", "假的", "骗人的", "智商税", "坑", "贵", "不值得"],
+          "competitorNames": ["芳疗世家", "阿芙", "茱莉蔻", "欧舒丹", "佰草集", "相宜本草", "林清轩", "逐本", "兰", "至本"],
+          "medicalTerms": ["治疗", "治愈", "根治", "诊断", "处方", "用药", "疗程", "手术", "疾病", "病理"]
+        }
+      },
+      "scoringModel": {
+        "dimensions": [
+          {"name": "关键词匹配度", "weight": 0.3, "maxScore": 10},
+          {"name": "提问明确度", "weight": 0.2, "maxScore": 10},
+          {"name": "地理位置匹配", "weight": 0.15, "maxScore": 10},
+          {"name": "互动历史", "weight": 0.15, "maxScore": 10},
+          {"name": "账号活跃度", "weight": 0.1, "maxScore": 10},
+          {"name": "消费力推测", "weight": 0.1, "maxScore": 10}
+        ],
+        "thresholds": {
+          "highIntent": 70,
+          "mediumIntent": 40,
+          "lowIntent": 0
+        }
+      },
+      "outputConfig": {
+        "format": "structured_json",
+        "dailyReport": true,
+        "weeklyReport": true,
+        "metrics": [
+          "total_scanned", "total_interacted", "total_leads",
+          "high_intent_leads", "conversion_to_miniprogram", "conversion_to_visit",
+          "platform_breakdown", "keyword_effectiveness"
+        ]
+      }
+    },
+    {
+      "id": "analytics-agent",
+      "name": "BI分析师·小芳数据",
+      "description": "全维度数据采集，自动生成日/周/月报，异常预警，策略优化建议，ROI归因分析",
+      "version": "1.0.0",
+      "promptFile": "analytics-agent.md",
+      "trigger": "scheduled",
+      "schedule": "0 */6 * * *",
+      "channels": ["cloud_function", "wecom"],
+      "model": "gemini-2.5-pro",
+      "temperature": 0.3,
+      "maxTokens": 8192,
+      "contextWindow": 128000,
+      "thinkingMode": true,
+      "knowledgeBase": [
+        "美业行业基准数据（到店率/转化率/复购率/客单价等）",
+        "中芳堂历史经营数据",
+        "各平台运营基准数据",
+        "体质分布统计数据",
+        "产品销量与客户画像关联",
+        "季节性业务波动规律",
+        "营销活动效果评估模型",
+        "ROI归因分析模型",
+        "异常检测规则库"
+      ],
+      "rules": [
+        "每日06:00自动生成昨日日报，推送至屈兵企微",
+        "每周一06:00自动生成周报，含趋势分析和策略建议",
+        "每月1日06:00自动生成月报，含全维度分析和下月规划建议",
+        "数据异常（指标偏离>30%）实时告警",
+        "客户流失预警（连续7天无互动）每日汇总",
+        "内容效果排名每日更新，连续3天表现差的内容类型自动建议调整",
+        "ROI归因按渠道/内容类型/体质人群三维分析",
+        "所有分析结果标注置信度",
+        "敏感数据脱敏处理后再展示",
+        "策略建议需标注风险评估"
+      ],
+      "analyticsConfig": {
+        "dataSources": {
+          "miniprogram": ["page_views", "unique_visitors", "tizhi_tests", "coupon_claims", "coupon_uses", "share_events", "bounce_rate", "avg_session_time"],
+          "wecom": ["new_contacts", "message_count", "response_rate", "customer_satisfaction", "followup_completion"],
+          "douyin": ["video_views", "likes", "comments", "shares", "follows", "profile_visits", "link_clicks", "avg_watch_time"],
+          "kuaishou": ["video_views", "likes", "comments", "shares", "follows", "profile_visits", "link_clicks"],
+          "xiaohongshu": ["note_views", "likes", "saves", "comments", "follows", "private_messages"],
+          "bilibili": ["video_views", "likes", "coins", "favorites", "comments", "danmaku", "follows"],
+          "baijiahao": ["article_views", "reads", "comments", "shares", "follows", "reading_duration"],
+          "shipinhao": ["video_views", "likes", "comments", "shares", "follows", "link_clicks"],
+          "store": ["daily_visitors", "new_customers", "return_customers", "avg_ticket", "total_revenue", "service_distribution", "satisfaction_score"],
+          "erp": ["product_sales", "inventory", "member_balance", "package_usage", "staff_performance"]
+        },
+        "reportTemplates": {
+          "daily": {
+            "recipients": ["屈兵"],
+            "sections": ["核心指标概览", "平台数据汇总", "新增客户", "到店情况", "异常预警", "今日待办"],
+            "deliveryChannel": "wecom"
+          },
+          "weekly": {
+            "recipients": ["屈兵", "所有芳疗师"],
+            "sections": ["周趋势分析", "平台对比", "内容效果排名", "客户分层变化", "截流效果", "策略优化建议"],
+            "deliveryChannel": "wecom"
+          },
+          "monthly": {
+            "recipients": ["屈兵"],
+            "sections": ["月度经营分析", "ROI归因", "客户生命周期分析", "产品/项目排名", "团队绩效", "下月目标与策略"],
+            "deliveryChannel": "wecom",
+            "format": "report_image"
+          }
+        },
+        "alerts": {
+          "traffic_drop": {"threshold": -30, "timeframe": "24h", "severity": "warning"},
+          "conversion_drop": {"threshold": -20, "timeframe": "24h", "severity": "critical"},
+          "revenue_drop": {"threshold": -25, "timeframe": "24h", "severity": "critical"},
+          "complaint_spike": {"threshold": 3, "timeframe": "24h", "severity": "critical"},
+          "churn_wave": {"threshold": 10, "timeframe": "7d", "severity": "warning"},
+          "system_error": {"threshold": 1, "timeframe": "1h", "severity": "critical"}
+        }
+      },
+      "outputConfig": {
+        "format": "structured_json",
+        "visualizationSupport": true,
+        "exportFormats": ["wecom_message", "image", "excel"]
+      }
+    },
+    {
+      "id": "erp-agent",
+      "name": "ERP同步官·小芳管家",
+      "description": "用户数据、订单数据、私域数据与门店ERP/收银系统实时双向同步",
+      "version": "1.0.0",
+      "promptFile": "erp-agent.md",
+      "trigger": "event_driven",
+      "events": ["customer_create", "customer_update", "order_create", "order_update", "coupon_use", "visit_complete", "member_recharge"],
+      "channels": ["cloud_function", "erp_api", "pos_api"],
+      "model": "gemini-2.5-flash",
+      "temperature": 0.2,
+      "maxTokens": 4096,
+      "contextWindow": 128000,
+      "knowledgeBase": [
+        "中芳堂ERP系统数据模型",
+        "收银系统接口规范",
+        "会员卡体系（储值卡/疗程卡/季卡/年卡）",
+        "产品SKU映射表（小程序 ↔ ERP）",
+        "服务项目映射表（小程序 ↔ ERP）",
+        "员工信息与绩效计算规则",
+        "库存管理规则",
+        "财务对账规则"
+      ],
+      "rules": [
+        "数据同步延迟不超过5秒",
+        "同步失败自动重试3次，间隔30秒",
+        "连续失败超过3次告警人工介入",
+        "冲突数据以最后修改时间戳为准",
+        "用户隐私数据（手机号/姓名）加密传输",
+        "所有同步操作记录日志，保留90天",
+        "每日凌晨自动对账，差异>0.1%告警",
+        "禁止在小程序端直接暴露ERP原始数据",
+        "敏感操作（退款/改价）需人工二次确认"
+      ],
+      "erpConfig": {
+        "syncDirection": "bidirectional",
+        "syncMode": "event_driven",
+        "targetSystems": [
+          {
+            "name": "门店ERP",
+            "type": "erp",
+            "apiBase": "${ERP_API_BASE}",
+            "authType": "api_key",
+            "syncEntities": ["customer", "member_card", "order", "product", "inventory", "staff", "service_record"]
+          },
+          {
+            "name": "收银系统",
+            "type": "pos",
+            "apiBase": "${POS_API_BASE}",
+            "authType": "api_key",
+            "syncEntities": ["transaction", "payment", "refund", "daily_report"]
+          }
+        ],
+        "entityMapping": {
+          "customer": {
+            "cloudbaseField": "customers",
+            "erpField": "t_customer",
+            "syncFields": ["name", "phone", "gender", "birthday", "wechat_openid", "tizhi_type", "customer_level", "tags", "source", "created_at", "updated_at"],
+            "conflictStrategy": "latest_wins"
+          },
+          "member_card": {
+            "cloudbaseField": "member_cards",
+            "erpField": "t_member_card",
+            "syncFields": ["card_id", "customer_id", "card_type", "balance", "total_charged", "expiry_date", "status", "created_at", "updated_at"],
+            "conflictStrategy": "latest_wins"
+          },
+          "order": {
+            "cloudbaseField": "orders",
+            "erpField": "t_order",
+            "syncFields": ["order_id", "customer_id", "order_type", "items", "amount", "discount", "coupon_id", "payment_method", "status", "created_at", "updated_at"],
+            "conflictStrategy": "latest_wins"
+          },
+          "product": {
+            "cloudbaseField": "products",
+            "erpField": "t_product",
+            "syncFields": ["sku", "name", "category", "price", "cost", "stock", "unit", "description", "updated_at"],
+            "conflictStrategy": "erp_wins"
+          },
+          "service_record": {
+            "cloudbaseField": "service_records",
+            "erpField": "t_service_record",
+            "syncFields": ["record_id", "customer_id", "service_id", "staff_id", "start_time", "end_time", "satisfaction_score", "notes", "created_at"],
+            "conflictStrategy": "latest_wins"
+          }
+        },
+        "reconciliationSchedule": "0 2 * * *",
+        "retryPolicy": {
+          "maxRetries": 3,
+          "retryInterval": 30000,
+          "backoffMultiplier": 2
+        }
+      },
+      "securityConfig": {
+        "encryptionAlgorithm": "AES-256-GCM",
+        "encryptedFields": ["phone", "name", "wechat_openid", "id_number"],
+        "dataRetentionDays": 90,
+        "accessControl": {
+          "erp_read": ["admin", "manager", "erp-agent"],
+          "erp_write": ["admin", "manager", "erp-agent"],
+          "erp_delete": ["admin"]
+        }
+      }
+    },
+    {
+      "id": "video-agent",
+      "name": "视频工厂·小芳制片",
+      "description": "自动素材剪辑、字幕生成、配音配乐、画面调色、封面制作、多平台格式适配",
+      "version": "1.0.0",
+      "promptFile": "video-agent.md",
+      "trigger": "event_driven",
+      "events": ["content_generated", "material_uploaded", "batch_process"],
+      "channels": ["cloud_function", "video_processing_service"],
+      "model": "gemini-2.5-pro",
+      "temperature": 0.4,
+      "maxTokens": 8192,
+      "contextWindow": 128000,
+      "knowledgeBase": [
+        "中芳堂品牌视觉规范（品牌色/logo/字体/风格）",
+        "各平台视频规格标准（分辨率/时长/比例/格式）",
+        "芳疗行业视频风格参考",
+        "素材标签与分类体系",
+        "字幕样式模板库",
+        "BGM曲库分类（温馨/自然/轻快/古典/国风）",
+        "转场效果模板库",
+        "封面模板库（分平台/分内容类型）",
+        "配音角色库（小芳温柔女声/专业男声等）"
+      ],
+      "rules": [
+        "视频分辨率不低于1080P，帧率不低于30fps",
+        "所有视频添加中芳堂品牌水印（右下角，透明度30%）",
+        "字幕使用品牌字体，字号不低于屏幕高度的4%",
+        "片尾统一添加小程序二维码引导页（持续3秒）",
+        "BGM音量不超过人声的30%，避免版权争议音乐",
+        "人物出镜视频需检查肖像权授权",
+        "产品功效展示视频需添加'效果因人而异'标注",
+        "禁止使用医疗功效词作为字幕内容",
+        "批量处理时优先按平台和时间紧急度排序",
+        "每周生成视频制作效率和质量报告"
+      ],
+      "videoConfig": {
+        "processingPipeline": [
+          {"step": "素材筛选", "mode": "ai_auto", "description": "从素材库中根据脚本匹配最佳素材片段"},
+          {"step": "粗剪", "mode": "ai_auto", "description": "按脚本时间线排列素材，去除冗余片段"},
+          {"step": "精剪", "mode": "ai_auto", "description": "优化节奏，添加转场效果"},
+          {"step": "字幕生成", "mode": "ai_auto", "description": "语音识别生成字幕，AI校对内容"},
+          {"step": "配音", "mode": "ai_auto", "description": "TTS生成配音，支持多角色"},
+          {"step": "配乐", "mode": "ai_auto", "description": "从曲库匹配BGM，自动卡点"},
+          {"step": "调色", "mode": "ai_auto", "description": "统一色调，应用品牌风格LUT"},
+          {"step": "封面生成", "mode": "ai_auto", "description": "提取关键帧+文字叠加生成封面"},
+          {"step": "多平台适配", "mode": "ai_auto", "description": "按各平台规格输出不同版本"},
+          {"step": "人工审核", "mode": "manual", "description": "屈兵最终审核确认"}
+        ],
+        "platformSpecs": {
+          "douyin": {"aspectRatio": "9:16", "resolution": "1080x1920", "maxDuration": 300, "format": "mp4", "codec": "h264", "bitrate": "8Mbps"},
+          "kuaishou": {"aspectRatio": "9:16", "resolution": "1080x1920", "maxDuration": 600, "format": "mp4", "codec": "h264", "bitrate": "6Mbps"},
+          "bilibili": {"aspectRatio": "16:9", "resolution": "1920x1080", "maxDuration": 1800, "format": "mp4", "codec": "h265", "bitrate": "12Mbps"},
+          "shipinhao": {"aspectRatio": "9:16", "resolution": "1080x1920", "maxDuration": 1800, "format": "mp4", "codec": "h264", "bitrate": "4Mbps"},
+          "xiaohongshu": {"aspectRatio": "3:4", "resolution": "1080x1440", "maxDuration": 900, "format": "mp4", "codec": "h264", "bitrate": "6Mbps"}
+        },
+        "coverTemplates": {
+          "douyin": {"aspectRatio": "3:4", "resolution": "1080x1440", "style": "eye_catching"},
+          "kuaishou": {"aspectRatio": "1:1", "resolution": "1080x1080", "style": "down_to_earth"},
+          "bilibili": {"aspectRatio": "16:9", "resolution": "1920x1080", "style": "professional"},
+          "shipinhao": {"aspectRatio": "1:1", "resolution": "1080x1080", "style": "warm"},
+          "xiaohongshu": {"aspectRatio": "3:4", "resolution": "1080x1440", "style": "aesthetic"}
+        },
+        "ttsConfig": {
+          "defaultVoice": "xiaofang_warm_female",
+          "alternativeVoices": ["professional_male", "gentle_female", "energetic_female"],
+          "speedMultiplier": 1.0,
+          "supportedLanguages": ["zh-CN"]
+        },
+        "musicLibrary": {
+          "categories": ["warm_nature", "light_happy", "classical_chinese", "guofeng", "ambient", "piano"],
+          "copyrightPolicy": "only_royalty_free_or_licensed"
+        }
+      },
+      "outputConfig": {
+        "autoUpload": {
+          "douyin": true,
+          "kuaishou": true,
+          "bilibili": false,
+          "shipinhao": false,
+          "xiaohongshu": false
+        },
+        "qualityCheck": {
+          "minResolution": "1080p",
+          "minFps": 30,
+          "maxAudioPeak": -3,
+          "subtitleAccuracy": 0.95,
+          "brandingCheck": true,
+          "complianceCheck": true
+        }
+      }
+    }
+  ],
+
+    {
+      "id": "geo-agent",
+      "name": "搜索占位官·小芳SEO",
+      "description": "GEO搜索占位优化：关键词矩阵生成、AI搜索内容优化、结构化标记、搜索排名监控、FAQ自动生成",
+      "promptFile": "geo-agent.md",
+      "trigger": "scheduled",
+      "schedule": "0 6 * * *",
+      "channels": ["cloud_function"],
+      "model": "gemini-2.5-pro",
+      "temperature": 0.4,
+      "maxTokens": 8192,
+      "knowledgeBase": [
+        "GEO平台规则库（百度AI搜索/抖音搜索/小红书搜索/微信搜一搜/B站搜索）",
+        "关键词矩阵模板（200+词：核心/长尾/问题/地域/场景/竞品）",
+        "结构化内容模板（FAQ/HowTo/对比评测/清单列表/指南攻略）",
+        "Schema标记规范（LocalBusiness/FAQ/HowTo/Product/Article/Review）",
+        "GEO内容优化37条规则",
+        "搜索意图分类器（信息型/导航型/交易型/商业型）",
+        "中芳堂品牌词库与核心业务关键词",
+        "宜昌本地化SEO策略（50+地域词/6大商圈）",
+        "竞品搜索占位分析",
+        "内容时效性优化策略",
+        "AI搜索引擎偏好分析",
+        "结构化数据验证工具",
+        "搜索排名监控指标体系"
+      ],
+      "rules": [
+        "每日6:00自动生成关键词矩阵并更新",
+        "所有生成内容自动添加结构化标记",
+        "内容优化必须通过GEO友好度评分（≥80分）",
+        "每周生成搜索排名变化报告",
+        "FAQ每周自动更新一次",
+        "新发布内容24小时内完成GEO优化",
+        "关键词矩阵按月更新（跟踪搜索趋势变化）",
+        "所有内容标题必须包含核心关键词",
+        "图片alt标签必须包含描述性关键词",
+        "保持品牌一致性，所有优化内容统一品牌语调"
+      ],
+      "outputConfig": {
+        "format": "structured_json",
+        "sections": [
+          "keyword_matrix",
+          "content_optimization",
+          "ranking_report",
+          "faq_base",
+          "performance_analytics"
+        ]
+      },
+      "qualityControl": {
+        "geoScoreThreshold": 80,
+        "keywordDensityRange": [1.5, 3.0],
+        "minContentLength": 800,
+        "maxTitleLength": 60,
+        "requireStructuredMarkup": true,
+        "requireInternalLinks": true,
+        "requireLocalKeywords": true,
+        "requireFreshness": true
+      }
+    }
+  ],
+
+  "globalSettings": {
+    "model": "gemini-2.5-pro",
+    "fallbackModel": "deepseek-v3",
+    "fastModel": "gemini-2.5-flash",
+    "maxRetries": 3,
+    "timeout": 60000,
+    "complianceNote": "本公司业务属于美容美体养生服务，不涉及医疗服务。本内容由AI生成，仅供参考。个体差异存在，效果因人而异。",
+    "dataRetentionDays": 90,
+    "logLevel": "info",
+    "errorAlertChannel": "wecom",
+    "errorAlertRecipients": ["屈兵"],
+    "rateLimiting": {
+      "perMinute": 100,
+      "perHour": 1000,
+      "perDay": 10000
+    },
+    "monitoring": {
+      "healthCheckInterval": 60,
+      "metricCollectionInterval": 300,
+      "alertThrottleInterval": 600
+    }
+  },
+
+  "agentOrchestration": {
+    "workflows": [
+      {
+        "name": "新用户全域获客",
+        "trigger": "new_user_signup",
+        "steps": [
+          {"agent": "tizhi-agent", "action": "conduct_tizhi_assessment"},
+          {"agent": "followup-agent", "action": "send_welcome_coupon"},
+          {"agent": "erp-agent", "action": "sync_customer_to_erp"},
+          {"agent": "analytics-agent", "action": "track_acquisition_channel"}
+        ]
+      },
+      {
+        "name": "每日内容生产发布",
+        "trigger": "daily_7am",
+        "steps": [
+          {"agent": "content-agent", "action": "generate_daily_content"},
+          {"agent": "video-agent", "action": "process_video_materials"},
+          {"agent": "analytics-agent", "action": "collect_previous_day_data"}
+        ]
+      },
+      {
+        "name": "全域截流与转化",
+        "trigger": "every_15min",
+        "steps": [
+          {"agent": "interception-agent", "action": "scan_and_interact"},
+          {"agent": "followup-agent", "action": "nurture_high_intent_leads"},
+          {"agent": "analytics-agent", "action": "track_interception_metrics"}
+        ]
+      },
+      {
+        "name": "客户生命周期管理",
+        "trigger": "continuous",
+        "steps": [
+          {"agent": "followup-agent", "action": "check_followup_schedule"},
+          {"agent": "analytics-agent", "action": "detect_churn_risk"},
+          {"agent": "erp-agent", "action": "sync_visit_records"}
+        ]
+      },
+      {
+        "name": "日报生成与推送",
+        "trigger": "daily_6am",
+        "steps": [
+          {"agent": "analytics-agent", "action": "generate_daily_report"},
+          {"agent": "analytics-agent", "action": "push_report_to_wecom"}
+        ]
+      }
+    ]
+  }
+}

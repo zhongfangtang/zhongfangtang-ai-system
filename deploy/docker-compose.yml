@@ -1,0 +1,113 @@
+# 中芳堂美业全域AI智能体系统 - Docker Compose
+# 使用: docker compose up -d
+
+version: '3.8'
+
+services:
+  # ============ 后端 API 服务 ============
+  api:
+    build:
+      context: ./server
+      dockerfile: ../deploy/Dockerfile.server
+    container_name: zhongfangtang-api
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongo:27017/zhongfangtang
+      - REDIS_URL=redis://redis:6379
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    env_file:
+      - ./server/.env
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./server/logs:/app/logs
+      - ./server/uploads:/app/uploads
+    networks:
+      - zft-network
+
+  # ============ MongoDB 数据库 ============
+  mongo:
+    image: mongo:7.0
+    container_name: zhongfangtang-mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: zhongfangtang
+    volumes:
+      - mongo-data:/data/db
+      - ./deploy/mongo-init.js:/docker-entrypoint-initdb.d/init.js:ro
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - zft-network
+
+  # ============ Redis 缓存 ============
+  redis:
+    image: redis:7-alpine
+    container_name: zhongfangtang-redis
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - zft-network
+
+  # ============ BI 数据中台 ============
+  dashboard:
+    image: nginx:alpine
+    container_name: zhongfangtang-dashboard
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./dashboard:/usr/share/nginx/html:ro
+      - ./deploy/dashboard-nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - zft-network
+
+  # ============ 定时任务 Worker ============
+  worker:
+    build:
+      context: ./server
+      dockerfile: ../deploy/Dockerfile.server
+    container_name: zhongfangtang-worker
+    restart: unless-stopped
+    command: node src/workers/scheduler.js
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongo:27017/zhongfangtang
+      - REDIS_URL=redis://redis:6379
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    env_file:
+      - ./server/.env
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - zft-network
+
+volumes:
+  mongo-data:
+    driver: local
+  redis-data:
+    driver: local
+
+networks:
+  zft-network:
+    driver: bridge

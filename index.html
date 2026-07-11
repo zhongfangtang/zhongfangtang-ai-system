@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中芳堂美业全域AI智能体系统</title>
+    <meta name="description" content="中芳堂中医芳香疗法美业全域AI智能体系统：AI引流拓客、私域转化、Web3存证与数据追踪闭环。">
+    <link rel="stylesheet" href="assets/a11y.css">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f0f1a;color:#e0e0f0;min-height:100vh}
+        .hero{background:linear-gradient(135deg,#0f0f1a 0%,#1a1a2e 50%,#16213e 100%);padding:60px 20px;text-align:center;border-bottom:1px solid rgba(212,168,83,0.2)}
+        .hero h1{font-size:2.2em;color:#d4a853;margin-bottom:10px}
+        .hero .subtitle{font-size:1.1em;color:#8a8aa0;max-width:700px;margin:0 auto;line-height:1.8}
+        .hero .badge-row{margin-top:20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+        .badge{background:rgba(212,168,83,0.12);border:1px solid rgba(212,168,83,0.25);color:#d4a853;padding:6px 16px;border-radius:20px;font-size:13px}
+        .container{max-width:1200px;margin:0 auto;padding:30px 20px}
+        .section-title{font-size:1.3em;color:#d4a853;margin:30px 0 16px;padding-bottom:8px;border-bottom:1px solid rgba(212,168,83,0.15)}
+        .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+        .card{background:#13131c;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px;transition:all .2s}
+        .card:hover{border-color:rgba(212,168,83,0.3);transform:translateY(-2px)}
+        .card .icon{font-size:2em;margin-bottom:8px}
+        .card h3{font-size:1em;color:#d4a853;margin-bottom:8px}
+        .card p{font-size:13px;color:#7a7689;line-height:1.6}
+        .card .meta{font-size:11px;color:#5a5679;margin-top:10px}
+        .card .link{display:inline-block;margin-top:10px;color:#5B7FBD;font-size:12px;text-decoration:none}
+        .card .link:hover{color:#7BAFED}
+        .stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin:20px 0}
+        .stat-card{background:rgba(212,168,83,0.06);border:1px solid rgba(212,168,83,0.1);border-radius:10px;padding:16px;text-align:center}
+        .stat-card .value{font-size:1.6em;font-weight:700;color:#d4a853}
+        .stat-card .label{font-size:11px;color:#6a6a80;margin-top:4px}
+        .file-tree{background:#13131c;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px;font-family:'Courier New',monospace;font-size:13px;line-height:1.8;overflow-x:auto}
+        .file-tree .dir{color:#d4a853}
+        .file-tree .file{color:#5B8C5A}
+        .file-tree .kb{color:#C97B6B}
+        .file-tree .engine{color:#5B7FBD}
+        .file-tree .comment{color:#5a5679}
+        footer{text-align:center;padding:30px;color:#5a5679;font-size:12px;border-top:1px solid rgba(255,255,255,0.04);margin-top:40px}
+        a{color:#5B7FBD;text-decoration:none}
+        a:hover{text-decoration:underline}
+    </style>
+</head>
+<body>
+<a href="#main" class="skip-link">跳到主要内容</a>
+
+<header class="hero" role="banner">
+    <h1>🏺 中芳堂美业全域AI智能体系统</h1>
+    <p class="subtitle">
+        中医芳香疗法 · 植物精油养生 · 六大平台AI自动化运营<br>
+        实现<strong style="color:#d4a853">AI一站式引流拓客 + 居家内调外养 + 到店外养内调 + 腕家H1健康监测追踪养护数据</strong>的闭环服务体系
+    </p>
+    <div class="badge-row">
+        <span class="badge">8大AI Agent</span>
+        <span class="badge">6大平台覆盖</span>
+        <span class="badge">8个知识库模块</span>
+        <span class="badge">5个核心引擎</span>
+        <span class="badge">200+条GEO提示词</span>
+        <span class="badge">20,000+行代码</span>
+    </div>
+</header>
+
+<main id="main" class="container" role="main">
+
+    <!-- 核心数据 -->
+    <div class="stats-row">
+        <div class="stat-card"><div class="value">8</div><div class="label">AI智能体Agent</div></div>
+        <div class="stat-card"><div class="value">6</div><div class="label">公域平台覆盖</div></div>
+        <div class="stat-card"><div class="value">8</div><div class="label">专业知识库模块</div></div>
+        <div class="stat-card"><div class="value">5</div><div class="label">核心业务引擎</div></div>
+        <div class="stat-card"><div class="value">200+</div><div class="label">GEO搜索提示词</div></div>
+        <div class="stat-card"><div class="value">40</div><div class="label">系统文件数</div></div>
+        <div class="stat-card"><div class="value">20,000+</div><div class="label">总代码行数</div></div>
+        <div class="stat-card"><div class="value">5,354</div><div class="label">知识库行数</div></div>
+    </div>
+
+    <!-- 八大AI智能体 -->
+    <h2 class="section-title">🧠 八大AI智能体 Agent</h2>
+    <div class="cards">
+        <div class="card">
+            <div class="icon">🧬</div>
+            <h3>体质辨证师·小芳</h3>
+            <p>九种体质辨识、面诊舌诊分析、精油膏方搭配、个性化调理方案推荐</p>
+            <span class="meta">模型: Gemini 2.5 Pro | 知识库: 17条</span>
+        </div>
+        <div class="card">
+            <div class="icon">📱</div>
+            <h3>内容总监·小芳创作</h3>
+            <p>日产30+条差异化内容，适配6大平台调性，含文案/脚本/海报/视频</p>
+            <span class="meta">模型: Gemini 2.5 Pro | 定时: 每日7:00</span>
+        </div>
+        <div class="card">
+            <div class="icon">💆</div>
+            <h3>客户关系经理·小芳跟进</h3>
+            <p>A/B/C/D四类客户分层运营，自动触达/升单/复购/沉默激活/生日关怀</p>
+            <span class="meta">模型: Gemini 2.5 Flash | 定时: 每4小时</span>
+        </div>
+        <div class="card">
+            <div class="icon">🎯</div>
+            <h3>全域截流官·小芳获客</h3>
+            <p>六大平台评论区/问答区监控，200+关键词识别，自动合规互动截流</p>
+            <span class="meta">模型: Gemini 2.5 Flash | 实时监控</span>
+        </div>
+        <div class="card">
+            <div class="icon">📊</div>
+            <h3>BI分析师·小芳数据</h3>
+            <p>全维度数据采集，自动生成日/周/月报，异常预警，策略优化建议</p>
+            <span class="meta">模型: Gemini 2.5 Pro | 定时: 每日8:00</span>
+        </div>
+        <div class="card">
+            <div class="icon">🏪</div>
+            <h3>ERP同步官·小芳管家</h3>
+            <p>客户/订单/财务数据与门店ERP/收银系统实时双向同步</p>
+            <span class="meta">模型: Gemini 2.5 Flash | 事件驱动</span>
+        </div>
+        <div class="card">
+            <div class="icon">🎬</div>
+            <h3>视频工厂·小芳制片</h3>
+            <p>自动素材剪辑、字幕生成、配音配乐、画面调色、封面制作</p>
+            <span class="meta">模型: Gemini 2.5 Pro | 按需触发</span>
+        </div>
+        <div class="card">
+            <div class="icon">🔍</div>
+            <h3>搜索占位官·小芳SEO</h3>
+            <p>GEO搜索占位优化，200+关键词矩阵，结构化标记，排名监控</p>
+            <span class="meta">模型: Gemini 2.5 Pro | 定时: 每日6:00</span>
+        </div>
+    </div>
+
+    <!-- 五大核心引擎 -->
+    <h2 class="section-title">⚙️ 五大核心引擎</h2>
+    <div class="cards">
+        <div class="card">
+            <div class="icon">🚀</div>
+            <h3>PlatformPublisher 发布引擎</h3>
+            <p>六大平台全自动/半自动双模式发布，合规自检+风险评级+失败重试</p>
+            <span class="meta">451行 | server/src/engines/PlatformPublisher.js</span>
+        </div>
+        <div class="card">
+            <div class="icon">✍️</div>
+            <h3>ContentGenerator 内容引擎</h3>
+            <p>AIGC美业专属内容生产，LBS定位+话题标签+多平台适配</p>
+            <span class="meta">468行 | server/src/engines/ContentGenerator.js</span>
+        </div>
+        <div class="card">
+            <div class="icon">🎯</div>
+            <h3>InterceptionEngine 截流引擎</h3>
+            <p>全域精准截流，关键词识别+意向评分+自动互动+风控规避</p>
+            <span class="meta">540行 | server/src/engines/InterceptionEngine.js</span>
+        </div>
+        <div class="card">
+            <div class="icon">💎</div>
+            <h3>PrivateDomainEngine 转化引擎</h3>
+            <p>私域全链路转化，分层运营+智能升单+复购激活+社群SOP</p>
+            <span class="meta">700行 | server/src/engines/PrivateDomainEngine.js</span>
+        </div>
+        <div class="card">
+            <div class="icon">🔍</div>
+            <h3>GEOEngine 搜索占位引擎</h3>
+            <p>GEO搜索优化，关键词矩阵+内容优化+排名监控+结构化标记</p>
+            <span class="meta">2,231行 | server/src/engines/GEOEngine.js</span>
+        </div>
+    </div>
+
+    <!-- 八大知识库 -->
+    <h2 class="section-title">📚 八大专业知识库</h2>
+    <div class="cards">
+        <div class="card">
+            <div class="icon">👤</div>
+            <h3>客户洞察知识库</h3>
+            <p>50+痛点词典 · 6类用户画像 · 5种消费心理 · 30+异议处理 · 客户生命周期模型</p>
+            <span class="meta">1,283行 | customer-insight-kb.js</span>
+        </div>
+        <div class="card">
+            <div class="icon">🎯</div>
+            <h3>截流获客知识库</h3>
+            <p>200+关键词词库 · 50+宜昌本地词 · 20+竞品账号 · 30+互动话术</p>
+            <span class="meta">736行 | interception-kb.js</span>
+        </div>
+        <div class="card">
+            <div class="icon">💬</div>
+            <h3>私域转化知识库</h3>
+            <p>50+话术模板 · 升单策略矩阵 · 10+促销模板 · 7种券码 · 社群SOP</p>
+            <span class="meta">776行 | conversion-kb.js</span>
+        </div>
+        <div class="card">
+            <div class="icon">✍️</div>
+            <h3>内容创作知识库</h3>
+            <p>24个爆款标题公式 · 6平台内容模板 · 热点日历 · 100+话题标签</p>
+            <span class="meta">515行 | content-kb.js</span>
+        </div>
+        <div class="card">
+            <div class="icon">🔍</div>
+            <h3>竞品行业知识库</h3>
+            <p>4大市场趋势 · 5类竞品对比 · 10条误区纠正 · 权威背书素材</p>
+            <span class="meta">456行 | competitor-kb.js</span>
+        </div>
+        <div class="card">
+            <div class="icon">📊</div>
+            <h3>门店运营知识库</h3>
+            <p>32项经营指标 · 3角色KPI · 库存管理 · 13步服务SOP · 财务报表</p>
+            <span class="meta">719行 | operations-kb.js</span>
+        </div>
+        <div class="card">
+            <div class="icon">🌐</div>
+            <h3>GEO搜索知识库</h3>
+            <p>5平台规则 · 200+关键词矩阵 · 5种内容模板 · 7种Schema · 37条优化规则</p>
+            <span class="meta">1,670行 | geo-kb.js</span>
+        </div>
+        <div class="card">
+            <div class="icon">🧬</div>
+            <h3>核心业务知识库</h3>
+            <p>九体辨识 · 28种精油 · 8款膏方 · 7型皮肤 · 面诊舌诊 · 腕家H1 · 闭环体系</p>
+            <span class="meta">869行 | knowledge.js (已有)</span>
+        </div>
+    </div>
+
+    <!-- GEO提示词库 -->
+    <h2 class="section-title">💡 GEO搜索占位提示词库（200+条）</h2>
+    <div class="cards">
+        <div class="card">
+            <div class="icon">🏷</div>
+            <h3>品牌核心提示词 50+</h3>
+            <p>让AI搜索引擎认识中芳堂：品牌介绍/业务描述/差异化定位/权威背书/宜昌本地</p>
+        </div>
+        <div class="card">
+            <div class="icon">📝</div>
+            <h3>内容优化提示词 80+</h3>
+            <p>标题优化/结构化内容/FAQ问答/权威引用/多媒体优化/内链建设/本地SEO</p>
+        </div>
+        <div class="card">
+            <div class="icon">🔎</div>
+            <h3>搜索意图提示词 60+</h3>
+            <p>信息型/对比型/交易型/本地型/问题型/长尾型搜索全覆盖</p>
+        </div>
+        <div class="card">
+            <div class="icon">🔄</div>
+            <h3>闭环体系提示词 20+</h3>
+            <p>推广AI引流拓客+居家内调外养+到店外养内调+腕家H1数据追踪闭环</p>
+        </div>
+        <div class="card">
+            <div class="icon">📱</div>
+            <h3>平台专属提示词 65+</h3>
+            <p>百度AI/抖音/小红书/微信搜一搜/B站各15+条专属优化提示词</p>
+        </div>
+        <div class="card">
+            <div class="icon">⏰</div>
+            <h3>自动化发布提示词 30+</h3>
+            <p>每日FAQ/每周专题/每月总结/节气养生/热点借势定时发布</p>
+        </div>
+    </div>
+
+    <!-- 品牌体验馆 -->
+    <h2 class="section-title">🚀 沉浸式品牌体验馆（Web3美业生态）</h2>
+    <div class="cards">
+        <div class="card" style="cursor:pointer" onclick="window.open('brand/index.html','_blank')">
+            <div class="icon">🌐</div>
+            <h3>Web3美业生态平台</h3>
+            <p>3D粒子背景 · AI数字人直播 · 区块链存证 · 元宇宙体验 · RWA凭证 · 链动分销 — 沉浸式品牌官网</p>
+            <span class="meta">入口: /brand/ | 点击在新窗口打开</span>
+        </div>
+        <div class="card">
+            <div class="icon">🎯</div>
+            <h3>与AI系统互补</h3>
+            <p>后端AI获客引擎（本系统）+ 前端品牌体验展示（体验馆）= 引流-体验-转化全闭环</p>
+            <span class="meta">零增量成本 | 复用现有服务器</span>
+        </div>
+    </div>
+
+    <!-- 系统文件结构 -->
+    <h2 class="section-title">📁 系统完整文件结构</h2>
+    <div class="file-tree">
+<span class="comment"># 中芳堂美业全域AI智能体系统 (独立后端 + BI中台)</span>
+<span class="comment"># 与微信小程序API对接，松耦合独立运行</span>
+
+<span class="dir">zhongfangtang-ai-system/</span>
+<span class="comment">├──</span> <span class="dir">server/</span>                          <span class="comment">← 后端API服务 (Node.js + Express)</span>
+<span class="comment">│   ├──</span> <span class="dir">src/</span>
+<span class="comment">│   │   ├──</span> <span class="file">index.js</span>                    <span class="comment">← 服务主入口 (端口3001)</span>
+<span class="comment">│   │   ├──</span> <span class="dir">api/</span>                         <span class="comment">← API路由层 (5个模块)</span>
+<span class="comment">│   │   │   ├──</span> <span class="file">routes.js</span>               <span class="comment">← 路由总定义</span>
+<span class="comment">│   │   │   ├──</span> <span class="file">platformRoutes.js</span>       <span class="comment">← 平台管理API (12接口)</span>
+<span class="comment">│   │   │   ├──</span> <span class="file">interceptionRoutes.js</span>   <span class="comment">← 截流获客API (8接口)</span>
+<span class="comment">│   │   │   ├──</span> <span class="file">analyticsRoutes.js</span>      <span class="comment">← 数据分析API (10接口)</span>
+<span class="comment">│   │   │   ├──</span> <span class="file">crmRoutes.js</span>            <span class="comment">← CRM管理API (10接口)</span>
+<span class="comment">│   │   │   └──</span> <span class="file">geoRoutes.js</span>            <span class="comment">← GEO搜索API (15接口)</span>
+<span class="comment">│   │   ├──</span> <span class="dir">engines/</span>                     <span class="comment">← 核心引擎层 (5个引擎)</span>
+<span class="comment">│   │   │   ├──</span> <span class="engine">PlatformPublisher.js</span>     <span class="comment">← 六大平台发布引擎</span>
+<span class="comment">│   │   │   ├──</span> <span class="engine">ContentGenerator.js</span>      <span class="comment">← AIGC内容生成引擎</span>
+<span class="comment">│   │   │   ├──</span> <span class="engine">InterceptionEngine.js</span>    <span class="comment">← 全域截流获客引擎</span>
+<span class="comment">│   │   │   ├──</span> <span class="engine">PrivateDomainEngine.js</span>   <span class="comment">← 私域全链路转化引擎</span>
+<span class="comment">│   │   │   ├──</span> <span class="engine">GEOEngine.js</span>             <span class="comment">← GEO搜索占位引擎</span>
+<span class="comment">│   │   │   └──</span> <span class="file">scheduler.js</span>            <span class="comment">← 定时任务调度</span>
+<span class="comment">│   │   ├──</span> <span class="dir">knowledge-base/</span>             <span class="comment">← 知识库层 (8个模块,5,354行)</span>
+<span class="comment">│   │   │   ├──</span> <span class="kb">customer-insight-kb.js</span>   <span class="comment">← 客户洞察 (1,283行)</span>
+<span class="comment">│   │   │   ├──</span> <span class="kb">interception-kb.js</span>       <span class="comment">← 截流获客 (736行)</span>
+<span class="comment">│   │   │   ├──</span> <span class="kb">conversion-kb.js</span>         <span class="comment">← 私域转化 (776行)</span>
+<span class="comment">│   │   │   ├──</span> <span class="kb">content-kb.js</span>            <span class="comment">← 内容创作 (515行)</span>
+<span class="comment">│   │   │   ├──</span> <span class="kb">competitor-kb.js</span>         <span class="comment">← 竞品行业 (456行)</span>
+<span class="comment">│   │   │   ├──</span> <span class="kb">operations-kb.js</span>         <span class="comment">← 门店运营 (719行)</span>
+<span class="comment">│   │   │   ├──</span> <span class="kb">geo-kb.js</span>               <span class="comment">← GEO搜索 (1,670行)</span>
+<span class="comment">│   │   │   └──</span> <span class="kb">geo-prompts-kb.cjs</span>        <span class="comment">← GEO提示词库 (200+条)</span>
+<span class="comment">│   │   ├──</span> <span class="dir">services/</span>                   <span class="comment">← 数据服务层</span>
+<span class="comment">│   │   │   └──</span> <span class="file">DatabaseService.js</span>       <span class="comment">← MongoDB (9个数据模型)</span>
+<span class="comment">│   │   ├──</span> <span class="dir">middleware/</span>                 <span class="comment">← 中间件</span>
+<span class="comment">│   │   │   └──</span> <span class="file">auth.js</span>                 <span class="comment">← JWT认证</span>
+<span class="comment">│   │   └──</span> <span class="dir">utils/</span>                      <span class="comment">← 工具函数</span>
+<span class="comment">│   │       └──</span> <span class="file">logger.js</span>               <span class="comment">← Winston日志</span>
+<span class="comment">│   ├──</span> <span class="dir">config/</span>
+<span class="comment">│   │   └──</span> <span class="file">default.js</span>               <span class="comment">← 全局配置</span>
+<span class="comment">│   └──</span> <span class="file">package.json</span>
+<span class="comment">│</span>
+<span class="comment">├──</span> <span class="dir">dashboard/</span>                      <span class="comment">← BI数据中台 (纯静态)</span>
+<span class="comment">│   ├──</span> <span class="file">index.html</span>                   <span class="comment">← 主页面 (含GEO面板)</span>
+<span class="comment">│   └──</span> <span class="dir">public/</span>
+<span class="comment">│       ├──</span> <span class="file">dashboard.css</span>             <span class="comment">← 暗色科技风样式</span>
+<span class="comment">│       ├──</span> <span class="file">dashboard.js</span>              <span class="comment">← Chart.js图表+交互</span>
+<span class="comment">│       └──</span> <span class="file">api.js</span>                    <span class="comment">← API服务层+Mock数据</span>
+<span class="comment">│</span>
+<span class="comment">├──</span> <span class="dir">brand/</span>                          <span class="comment">← Web3美业生态沉浸馆 (纯静态)</span>
+<span class="comment">│   ├──</span> <span class="file">index.html</span>                   <span class="comment">← Web3品牌展示页 (已修复图片)</span>
+<span class="comment">│   └──</span> <span class="dir">assets/</span>
+<span class="comment">│       └──</span> <span class="file">placeholder.svg</span>           <span class="comment">← 本地占位图(替换过期byteimg)</span>
+<span class="comment">│</span>
+<span class="comment">├──</span> <span class="dir">docs/</span>                            <span class="comment">← 方案文档</span>
+<span class="comment">│   ├──</span> <span class="file">agents-config-v2.json</span>        <span class="comment">← 8个Agent完整配置</span>
+<span class="comment">│   ├──</span> <span class="file">platform-integration-v2.md</span>   <span class="comment">← 6平台对接方案</span>
+<span class="comment">│   ├──</span> <span class="file">interception-strategy.md</span>     <span class="comment">← 截流策略详解</span>
+<span class="comment">│   ├──</span> <span class="file">data-sync-spec.md</span>            <span class="comment">← 数据同步规格</span>
+<span class="comment">│   └──</span> <span class="file">knowledge-base-overview.md</span>   <span class="comment">← 知识库总览</span>
+<span class="comment">│</span>
+<span class="comment">├──</span> <span class="dir">deploy/</span>                          <span class="comment">← 部署方案</span>
+<span class="comment">│   ├──</span> <span class="file">deploy.sh</span>                   <span class="comment">← 一键部署脚本</span>
+<span class="comment">│   ├──</span> <span class="file">docker-compose.yml</span>          <span class="comment">← Docker编排</span>
+<span class="comment">│   ├──</span> <span class="file">Dockerfile.server</span>           <span class="comment">← 服务镜像</span>
+<span class="comment">│   └──</span> <span class="file">nginx.conf</span>                  <span class="comment">← Nginx反向代理</span>
+<span class="comment">│</span>
+<span class="comment">└──</span> <span class="file">README.md</span>                       <span class="comment">← 完整落地实施方案 (526行)</span>
+    </div>
+
+    <!-- 闭环体系 -->
+    <h2 class="section-title">🔄 中芳堂AI一站式闭环服务体系</h2>
+    <div style="background:linear-gradient(135deg,rgba(212,168,83,0.08),rgba(212,168,83,0.02));border:1px solid rgba(212,168,83,0.2);border-radius:16px;padding:30px;text-align:center;margin:20px 0">
+        <div style="display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:12px;font-size:15px">
+            <span style="background:rgba(212,168,83,0.15);padding:10px 18px;border-radius:8px;color:#d4a853">🤖 AI引流拓客</span>
+            <span style="color:#d4a853;font-size:1.3em">→</span>
+            <span style="background:rgba(91,140,90,0.15);padding:10px 18px;border-radius:8px;color:#5B8C5A">🏠 居家内调外养</span>
+            <span style="color:#d4a853;font-size:1.3em">→</span>
+            <span style="background:rgba(91,127,189,0.15);padding:10px 18px;border-radius:8px;color:#5B7FBD">🏪 到店外养内调</span>
+            <span style="color:#d4a853;font-size:1.3em">→</span>
+            <span style="background:rgba(201,123,107,0.15);padding:10px 18px;border-radius:8px;color:#C97B6B">⌚ 腕家H1数据追踪</span>
+            <span style="color:#d4a853;font-size:1.3em">→</span>
+            <span style="background:rgba(139,58,92,0.15);padding:10px 18px;border-radius:8px;color:#8B3A5C">🔄 循环改善</span>
+        </div>
+        <p style="margin-top:16px;color:#8a8aa0;font-size:13px;line-height:1.8">
+            公域六大平台AI全自动获客 → 精准截流引流私域 → AI体质/皮肤测评 → 个性化调理方案 →<br>
+            居家精油+纯露+膏方+芝参护肤 → 腕家H1 24小时五藏功能监测 → 到店芳疗SPA+经络疏通 →<br>
+            数据对比验证效果 → 方案持续优化 → 客户口碑裂变 → 更多公域流量
+        </p>
+    </div>
+
+    <!-- 快速链接 -->
+    <h2 class="section-title">🔗 快速入口</h2>
+    <div class="cards">
+        <div class="card">
+            <div class="icon">📊</div>
+            <h3><a href="/workspace/中芳堂BI数据中台/index.html">BI数据中台 Dashboard</a></h3>
+            <p>实时运营数据看板：KPI指标/平台对比/转化漏斗/GEO搜索占位/私域流量池</p>
+        </div>
+        <div class="card">
+            <div class="icon">📋</div>
+            <h3><a href="README.md">完整落地实施方案</a></h3>
+            <p>八大模块详细方案、技术架构、实施路线图、成本预算、ROI预估</p>
+        </div>
+        <div class="card">
+            <div class="icon">🤖</div>
+            <h3><a href="docs/agents-config-v2.json">Agent配置文件</a></h3>
+            <p>8个AI Agent完整配置：模型/知识库/规则/输出格式</p>
+        </div>
+        <div class="card">
+            <div class="icon">📚</div>
+            <h3><a href="docs/knowledge-base-overview.md">知识库体系总览</a></h3>
+            <p>8个知识库模块、Agent映射、优先级指南</p>
+        </div>
+        <div class="card">
+            <div class="icon">🌐</div>
+            <h3><a href="docs/platform-integration-v2.md">平台对接方案</a></h3>
+            <p>六大平台API对接：抖音/小红书/视频号/快手/B站/百家号</p>
+        </div>
+        <div class="card">
+            <div class="icon">🎯</div>
+            <h3><a href="docs/interception-strategy.md">截流策略详解</a></h3>
+            <p>关键词词库/意向评分/互动话术/风控规避</p>
+        </div>
+    </div>
+
+</main>
+
+<footer role="contentinfo">
+    中芳堂 · 屈氏美业 | 宜昌市伍家岗区夷陵大道134号紫光园6号楼<br>
+    中医芳香疗法 · 植物精油养生 · 美容美体养生服务<br>
+    本系统由 WorkBuddy AI 搭建 | 版本 V4.0 | 2026年7月
+</footer>
+
+</body>
+</html>

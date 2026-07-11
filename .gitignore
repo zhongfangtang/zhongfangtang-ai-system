@@ -1,0 +1,23 @@
+# 依赖
+node_modules/
+server/node_modules/
+
+# 环境变量（含密钥，禁止提交）
+server/.env
+.env
+.env.local
+
+# 日志与上传
+server/logs/
+server/uploads/
+*.log
+
+# 系统文件
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# 构建产物
+dist/
+coverage/
