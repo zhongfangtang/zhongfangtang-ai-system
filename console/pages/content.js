@@ -330,17 +330,28 @@ window.publishNow = async function() {
 };
 
 window.sendToVideo = async function() {
-  if (!lastGenerated._id) return toast('请先生成内容');
+  if (!lastGenerated?._id) {
+    // 容错：尝试从最近的内容列表取
+    const { ok, j } = await API.content.list();
+    if (ok && j.success && j.data?.length) {
+      lastGenerated = j.data[0];
+    }
+    if (!lastGenerated?._id) {
+      return toast('请先生成内容（当前无可用草稿）');
+    }
+  }
+  toast('正在发送至视频工厂…');
   const { ok, j } = await API.video.generate({
     contentId: lastGenerated._id,
     platform: lastGenerated.platform || 'xiaohongshu',
     topic: lastGenerated.title,
   });
   if (ok && j.success) {
-    toast('已送视频工厂');
-    document.getElementById('gr_chainStatus').innerHTML += '<div>✅ 已送视频工厂</div>';
+    toast('✅ 已送视频工厂，正在排队制作');
+    document.getElementById('gr_chainStatus').innerHTML += '<div>✅ 已送视频工厂（任务ID: ' + (j.data?._id || '—') + '）</div>';
   } else {
-    toast('发送失败');
+    toast('❌ 发送失败: ' + (j.message || '未知错误'));
+    console.error('sendToVideo failed:', j);
   }
 };
 

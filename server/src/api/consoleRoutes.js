@@ -16,6 +16,8 @@ import { Router } from 'express';
 import axios from 'axios';
 import config from '../../config/default.js';
 import complianceService from '../services/ComplianceService.js';
+import { notifyAdmin } from '../services/WeChatNotifyService.js';
+import logger from '../utils/logger.js';
 import {
   Content,
   InterceptionLead,
@@ -213,6 +215,12 @@ router.post('/content/generate', async (req, res) => {
       metadata: { keyPoints: draft.keyPoints },
     });
     res.json({ success: true, data: doc, message: aiGenerated ? 'AI 已生成并保存' : '已基于知识库生成真草稿并保存', aiGenerated, degradeReason: aiGenerated ? null : 'AI 调用失败或未配置，使用知识库模板生成' });
+
+    // 异步通知运营者（不阻塞响应）
+    notifyAdmin({
+      type: 'content_ready',
+      extra: { title: doc.title, platform: doc.platform },
+    }).catch(err => logger.warn('服务号通知(内容生成)失败', { error: err.message }));
   } catch (e) {
     res.status(500).json({ success: false, message: e.message });
   }
