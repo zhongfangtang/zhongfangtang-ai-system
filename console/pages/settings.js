@@ -1,129 +1,79 @@
 /**
- * 系统设置 - 指挥中枢总览
- * 展示全系统互联状态 + 实际资产配置
+ * 系统设置 - 指挥中枢 + 平台对接 + 企微配置
  */
 import * as API from '../js/api.js';
 
 export async function render(el) {
   el.innerHTML = `
-    <div class="card">
-      <h3>⚙️ 系统指挥中枢 V5.2</h3>
-      <div class="hint">中芳堂美业AI智能体 · 一人运营公司 · 14模块互联</div>
-    </div>
+    <div class="card"><h3>⚙️ 中芳堂指挥中枢 V5.2</h3><div class="hint">17模块互联 · 10 Agent · 18知识库 · 6平台对接</div></div>
 
-    <!-- 系统互联状态 -->
-    <div class="card mt16">
-      <h3>🔗 模块互联状态</h3>
-      <div id="interconnectStatus"></div>
-    </div>
+    <!-- 平台对接 -->
+    <div class="card mt16"><h3>📡 6平台API对接</h3><div id="platformConfig"></div></div>
 
-    <!-- 实际资产配置 -->
-    <div class="card mt16">
-      <h3>🏦 实际平台资产</h3>
-      <div id="assetConfig"></div>
-    </div>
+    <!-- 企业微信 -->
+    <div class="card mt16"><h3>💬 企业微信SCRM对接</h3><div id="weworkConfig"></div></div>
 
     <!-- 系统健康 -->
     <div class="grid2 mt16">
-      <div class="card">
-        <h3>🫀 系统健康</h3>
-        <div id="systemHealth"></div>
-      </div>
-      <div class="card">
-        <h3>📊 数据总览</h3>
-        <div id="dataOverview"></div>
-      </div>
+      <div class="card"><h3>🫀 系统健康</h3><div id="systemHealth"></div></div>
+      <div class="card"><h3>📊 数据总览</h3><div id="dataOverview"></div></div>
     </div>
   `;
-
-  await Promise.all([loadInterconnect(), loadAssets(), loadHealth(), loadData()]);
+  await Promise.all([loadPlatforms(), loadWework(), loadHealth(), loadData()]);
 }
 
-async function loadInterconnect() {
-  // 检测各模块间数据流通
-  const T = localStorage.getItem('zft_token');
-  const results = [];
-
-  try {
-    const [content, leads, cust, video] = await Promise.all([
-      API.content.list().catch(()=>null),
-      API.leads.list().catch(()=>null),
-      API.crm.list().catch(()=>null),
-      API.video.tasks().catch(()=>null),
-    ]);
-
-    results.push({ from: '内容生产', to: '发布管理', status: (content?.data?.length > 0), detail: `${content?.data?.length||0}条内容` });
-    results.push({ from: '内容生产', to: '视频工厂', status: (video?.data?.length > 0), detail: `${video?.data?.length||0}个任务` });
-    results.push({ from: '截流线索', to: '客户CRM', status: true, detail: `${leads?.data?.length||0}线索→${cust?.data?.length||0}客户` });
-    results.push({ from: '数字人直播', to: '截流引擎', status: true, detail: '弹幕互动→自动截流' });
-    results.push({ from: 'Web3存证', to: '元宇宙展厅', status: true, detail: '链上存证↔展厅联动' });
-    results.push({ from: '分销裂变', to: '金融服务', status: true, detail: '佣金→积分→美业币' });
-    results.push({ from: 'AI智能体(10)', to: '所有模块', status: true, detail: '10 Agent编排调度' });
-    results.push({ from: '蚁小二分发', to: '6平台发布', status: true, detail: '一键多平台同步' });
-  } catch(e) {}
-
-  document.getElementById('interconnectStatus').innerHTML = results.map(r => `
-    <div class="row">
-      <div class="grow"><b>${r.from}</b> → <span style="color:var(--gold2)">${r.to}</span></div>
-      <span class="badge ${r.status?'b-active':'b-pending'}">${r.status?'✅ 已联通':'⏳ 待配置'}</span>
-      <span class="meta">${r.detail}</span>
-    </div>
-  `).join('');
-}
-
-function loadAssets() {
-  const assets = [
-    { name: 'AI智享直播', type: '数字人直播', status: 'active', action: 'digitalhuman' },
-    { name: '蚁小二', type: '多平台分发', status: 'active', action: 'publish' },
-    { name: '抖音来客·屈氏美容', type: '门店+团购', status: 'active', action: 'publish' },
-    { name: '小红书个人号', type: '种草+截流', status: 'active', action: 'leads' },
-    { name: '公众号服务号', type: '模板消息+客服', status: 'active', action: 'crm' },
-    { name: '视频号(2个)', type: '短视频+直播', status: 'active', action: 'publish' },
-    { name: '视频号小店', type: '商品橱窗', status: 'active', action: 'finance' },
-    { name: 'B站个人号', type: '知识科普', status: 'active', action: 'publish' },
-    { name: '快手个人号', type: '短视频', status: 'active', action: 'publish' },
-    { name: '企业微信', type: 'SCRM', status: 'pending', action: 'crm' },
-    { name: '微信小程序', type: '预约+商城', status: 'pending', action: 'settings' },
-    { name: 'Web3 Sepolia', type: '链上存证', status: 'active', action: 'web3' },
+function loadPlatforms() {
+  const platforms = [
+    { name:'蚁小二', account:'多平台一键分发', status:'active', note:'内容同步发布到抖音/小红书/视频号/快手/B站' },
+    { name:'抖音来客', account:'屈氏美容美体服务部', status:'active', note:'门店认领+团购+预约+评价' },
+    { name:'小红书', account:'个人号', status:'active', note:'种草��记+私信截流' },
+    { name:'公众号', account:'服务号(已认证)', status:'active', note:'模板消息+���单+客服' },
+    { name:'视频号(×2)', account:'主���+副号', status:'active', note:'短视频+直播+视频号小店' },
+    { name:'B站', account:'个人号', status:'active', note:'知识科普长视频' },
+    { name:'快手', account:'个人号', status:'active', note:'短视频' },
+    { name:'企业微信', account:'待认证', status:'pending', note:'认证后可对接SCRM自动欢迎+客户管理' },
+    { name:'小程序', account:'备案审核中', status:'pending', note:'审核通过后接入预约+商城' },
   ];
+  document.getElementById('platformConfig').innerHTML = platforms.map(p=>`
+    <div class="row">
+      <div class="grow"><b>${p.name}</b> <span class="meta">· ${p.account}</span><div class="meta">${p.note}</div></div>
+      <span class="badge b-${p.status}">${p.status==='active'?'已对接':'待对接'}</span>
+    </div>`).join('');
+}
 
-  document.getElementById('assetConfig').innerHTML = assets.map(a => `
-    <div class="row" style="cursor:pointer" onclick="switchPage('${a.action}')">
-      <div class="grow"><b>${esc(a.name)}</b> <span class="meta">· ${esc(a.type)}</span></div>
-      <span class="badge b-${a.status}">${a.status==='active'?'已对接':'待对接'}</span>
-      <span class="meta">→ ${a.action}</span>
-    </div>
-  `).join('');
+function loadWework() {
+  document.getElementById('weworkConfig').innerHTML = `
+    <div class="row"><div class="grow"><b>企业微信认证</b></div><span class="badge b-pending">未认证</span></div>
+    <div class="row"><div class="grow">SCRM自动欢迎</div><span class="badge b-pending">待认证后启用</span></div>
+    <div class="row"><div class="grow">客户标签管理</div><span class="badge b-pending">待认证后启用</span></div>
+    <div class="row"><div class="grow">���发消息</div><span class="badge b-pending">待认证后启用</span></div>
+    <div class="hint mt12">企业微信认证步骤：登录work.weixin.qq.com → 提交企业认证 → 获取corpId+corpSecret → 填入.env → 重启生效</div>`;
 }
 
 async function loadHealth() {
   try {
-    const { ok, j } = await API.system.health();
-    if (ok && j) {
-      document.getElementById('systemHealth').innerHTML = `
+    const {ok,j}=await API.system.health();
+    if(ok&&j){
+      document.getElementById('systemHealth').innerHTML=`
         <div class="row"><div class="grow">服务状态</div><span class="badge b-active">${j.status||'healthy'}</span></div>
         <div class="row"><div class="grow">版本</div><span>${j.version||'5.2.0'}</span></div>
         <div class="row"><div class="grow">运行时间</div><span>${Math.floor((j.checks?.uptime||0)/3600)}小时</span></div>
-        <div class="row"><div class="grow">内存使用</div><span>${j.checks?.memory?.heapUsedMB||0}MB / ${j.checks?.memory?.heapTotalMB||0}MB</span></div>
-      `;
+        <div class="row"><div class="grow">内存</div><span>${j.checks?.memory?.heapUsedMB||0}MB</span></div>`;
     }
-  } catch(e) {}
+  }catch(e){}
 }
 
 async function loadData() {
   try {
-    const { ok, j } = await API.system.status();
-    if (ok && j.success) {
-      const c = j.data.counts || {};
-      document.getElementById('dataOverview').innerHTML = `
+    const {ok,j}=await API.system.status();
+    if(ok&&j.success){
+      const c=j.data.counts||{};
+      document.getElementById('dataOverview').innerHTML=`
         <div class="stat-card"><div class="num">${c.content||0}</div><div class="lbl">内容</div></div>
         <div class="stat-card mt12"><div class="num">${c.leads||0}</div><div class="lbl">线索</div></div>
         <div class="stat-card mt12"><div class="num">${c.customers||0}</div><div class="lbl">客户</div></div>
         <div class="stat-card mt12"><div class="num">${c.publishes||0}</div><div class="lbl">发布</div></div>
-        <div class="hint mt12">AI模式：${j.data.aiMode==='llm'?'真实大模型':'知识库组合'}</div>
-      `;
+        <div class="hint mt12">AI模式：${j.data.aiMode==='llm'?'真实大模型(硅基流动)':'知识库组合'}</div>`;
     }
-  } catch(e) {}
+  }catch(e){}
 }
-
-function esc(s) { return (s == null ? '' : String(s)).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); }
