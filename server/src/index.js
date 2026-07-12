@@ -17,6 +17,7 @@ import config from '../config/default.js';
 import logger from './utils/logger.js';
 import { connectDatabase } from './services/DatabaseService.js';
 import routes from './api/routes.js';
+import staticRoutes from './api/staticRoutes.js';
 import { startScheduledTasks } from './engines/scheduler.js';
 
 const app = express();
@@ -51,6 +52,9 @@ app.use(express.json({ limit: '10mb' }));
 
 /** URL 编码请求体解析 */
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// ==================== 静态页面（同源自托管：运营后台/看板/门户） ====================
+app.use('/', staticRoutes);
 
 // ==================== 健康检查 ====================
 
