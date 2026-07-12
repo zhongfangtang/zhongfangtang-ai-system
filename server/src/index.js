@@ -32,6 +32,7 @@ import GeoAgent from './agents/GeoAgent.js';
 import ErpAgent from './agents/ErpAgent.js';
 import DistributionAgent from './agents/DistributionAgent.js';
 import DigitalHumanAgent from './agents/DigitalHumanAgent.js';
+import douyinOAuth from './services/DouyinOAuth.js';
 import MonitorService from './services/MonitorService.js';
 import { getConfiguredIntegrations } from './services/IntegrationManifest.js';
 
@@ -136,6 +137,25 @@ app.get('/api/v1/system/integrations', (req, res) => {
 // ==================== API 路由 ====================
 
 app.use('/api/v1', routes);
+
+// ==================== 抖音来客 OAuth 回调（公开，抖音授权后跳转） ====================
+app.get('/callback/douyin', async (req, res) => {
+  const { code, state, error } = req.query;
+  const style = "font-family:-apple-system,'PingFang SC',sans-serif;max-width:520px;margin:80px auto;padding:32px;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.08);text-align:center";
+  if (error || !code) {
+    return res.status(400).send(
+      `<div style="${style}"><h2>❌ 抖音授权失败</h2><p>${error || '未获取到授权 code'}</p><p style="color:#888">可关闭此页面，返回控制台重试。</p></div>`
+    );
+  }
+  try {
+    const { account } = await douyinOAuth.completeAuth(code);
+    res.send(
+      `<div style="${style}"><h2>✅ 抖音来客授权成功</h2><p>账号「${account.accountName}」的 access_token 已安全存储。</p><p style="color:#888">请关闭此页面，返回控制台即可一键发文。</p></div>`
+    );
+  } catch (e) {
+    res.status(500).send(`<div style="${style}"><h2>❌ 授权处理失败</h2><p>${e.message}</p></div>`);
+  }
+});
 
 // ==================== 404 处理 ====================
 

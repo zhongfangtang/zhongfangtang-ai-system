@@ -159,7 +159,16 @@ const publish = {
   status: (id) => api(`/api/v1/platforms/publish/${id}/status`).then(r => r.j),
 };
 
+// 抖音来客 OAuth 授权
+const douyin = {
+  oauthUrl: () => api(`/api/v1/platforms/douyin/oauth/url?redirect_uri=${encodeURIComponent(location.origin + '/callback/douyin')}`).then(r => r.j),
+  exchange: (code) => api('/api/v1/platforms/douyin/oauth/exchange', {
+    method: 'POST', body: JSON.stringify({ code }),
+  }).then(r => r.j),
+  refresh: () => api('/api/v1/platforms/douyin/oauth/refresh', { method: 'POST' }).then(r => r.j),
+};
+
 export {
   API_BASE, login, logout, content, leads, crm, agents, system, web3,
-  distribution, points, finance, video, reports, publish, setToken,
+  distribution, points, finance, video, reports, publish, douyin, setToken,
 };

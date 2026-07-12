@@ -7,10 +7,12 @@
  */
 
 import { Router } from 'express';
+import config from '../../config/default.js';
 import PlatformPublisher, { PUBLISH_STATUS } from '../engines/PlatformPublisher.js';
 import ContentGenerator from '../engines/ContentGenerator.js';
 import { Content, PublishRecord, PlatformAccount } from '../services/DatabaseService.js';
 import { authorize } from '../middleware/auth.js';
+import douyinOAuth from '../services/DouyinOAuth.js';
 import logger from '../utils/logger.js';
 
 const router = Router();
@@ -300,6 +302,54 @@ router.get('/publish-records', async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ success: false, data: null, message: err.message });
+  }
+});
+
+// ==================== 抖音来客 OAuth 授权 ====================
+
+/**
+ * GET /api/v1/platforms/douyin/oauth/url
+ * 返回抖音授权跳转地址（前端打开新标签页引导用户授权）
+ * 支持 ?redirect_uri= 覆盖（前端传 window.location.origin + /callback/douyin）
+ */
+router.get('/douyin/oauth/url', authorize('admin'), (req, res) => {
+  try {
+    const state = Math.random().toString(36).slice(2, 10);
+    const url = douyinOAuth.buildAuthUrl(state, req.query.redirect_uri);
+    res.json({ success: true, data: { url, state, redirectUri: req.query.redirect_uri || config.platforms.douyin.redirectUri } });
+  } catch (e) {
+    res.status(400).json({ success: false, message: e.message });
+  }
+});
+
+/**
+ * POST /api/v1/platforms/douyin/oauth/exchange
+ * 用授权码换 token（供前端捕获 code 时调用；后端/callback/douyin 已自动处理）
+ */
+router.post('/douyin/oauth/exchange', authorize('admin'), async (req, res) => {
+  try {
+    const { code } = req.body || {};
+    if (!code) throw new Error('缺少授权码 code');
+    const { account, token } = await douyinOAuth.completeAuth(code);
+    res.json({ success: true, data: account, message: '抖音来客授权成功' });
+  } catch (e) {
+    res.status(400).json({ success: false, message: e.message });
+  }
+});
+
+/**
+ * POST /api/v1/platforms/douyin/oauth/refresh
+ * 用 refresh_token 刷新 access_token
+ */
+router.post('/douyin/oauth/refresh', authorize('admin'), async (req, res) => {
+  try {
+    const acct = await PlatformAccount.findOne({ platform: 'douyin', status: 'active' })
+      .sort({ updatedAt: -1 }).lean();
+    if (!acct?.refreshToken) throw new Error('无可用 refresh_token（请重新授权）');
+    const account = await douyinOAuth.refreshAndStore(acct.refreshToken);
+    res.json({ success: true, data: account, message: 'token 已刷新' });
+  } catch (e) {
+    res.status(400).json({ success: false, message: e.message });
   }
 });
 

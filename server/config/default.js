@@ -81,6 +81,7 @@ const config = {
       appSecret: process.env.DOUYIN_APP_SECRET || '',
       redirectUri: process.env.DOUYIN_REDIRECT_URI || '',
       accessToken: process.env.DOUYIN_ACCESS_TOKEN || '',
+      scope: process.env.DOUYIN_SCOPE || '',
       apiBase: 'https://open.douyin.com',
       /** 发布限制：半自动模式 */
       publishMode: 'semi-auto',
