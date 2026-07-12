@@ -116,21 +116,32 @@ ${ct.kw.map((k) => `· ${k}`).join('\n')}`;
 
 async function tryLLM(prompt) {
   if (!config.ai.apiKey) return null;
-  try {
-    const r = await axios.post(
-      `${config.ai.endpoint}/chat/completions`,
-      {
-        model: config.ai.models.text,
-        messages: [{ role: 'user', content: prompt }],
-        max_tokens: 800,
-        temperature: 0.8,
-      },
-      { timeout: 30000, headers: { Authorization: `Bearer ${config.ai.apiKey}` } }
-    );
-    return r.data?.choices?.[0]?.message?.content?.trim() || null;
-  } catch (e) {
-    return null;
+  // 重试 2 次（免费模型偶发超时），超时提升到 45s
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const r = await axios.post(
+        `${config.ai.endpoint}/chat/completions`,
+        {
+          model: config.ai.models.text,
+          messages: [{ role: 'user', content: prompt }],
+          max_tokens: 800,
+          temperature: 0.8,
+        },
+        { timeout: 45000, headers: { Authorization: `Bearer ${config.ai.apiKey}` } }
+      );
+      const content = r.data?.choices?.[0]?.message?.content?.trim();
+      if (content) return content;
+      return null;
+    } catch (e) {
+      if (attempt === 1) {
+        console.error('[tryLLM] AI 调用失败（已重试2次）', e.code || e.message);
+        return null;
+      }
+      // 等待 1s 后重试
+      await new Promise(r => setTimeout(r, 1000));
+    }
   }
+  return null;
 }
 
 // ==================== 系统状态 ====================
@@ -201,7 +212,7 @@ router.post('/content/generate', async (req, res) => {
       status: 'draft',
       metadata: { keyPoints: draft.keyPoints },
     });
-    res.json({ success: true, data: doc, message: aiGenerated ? 'AI 已生成并保存' : '已基于知识库生成真草稿并保存' });
+    res.json({ success: true, data: doc, message: aiGenerated ? 'AI 已生成并保存' : '已基于知识库生成真草稿并保存', aiGenerated, degradeReason: aiGenerated ? null : 'AI 调用失败或未配置，使用知识库模板生成' });
   } catch (e) {
     res.status(500).json({ success: false, message: e.message });
   }
