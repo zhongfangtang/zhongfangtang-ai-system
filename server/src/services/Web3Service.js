@@ -15,21 +15,31 @@
  */
 
 import { ethers } from 'ethers';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import config from '../../config/default.js';
 import { createModuleLogger } from '../utils/logger.js';
 
 const logger = createModuleLogger('Web3Service');
+const __w3fn = fileURLToPath(import.meta.url);
+const __w3dn = path.dirname(__w3fn);
 
-/**
- * Notary 存证合约 ABI（ethers v6 格式）
- * 合约源码见仓库 contracts/Notary.sol
- */
-const NOTARY_ABI = [
-  'event Notarized(bytes32 indexed hash, string recordType, address indexed notary, uint256 timestamp)',
-  'function notarize(bytes32 hash, string recordType)',
-  'function verify(bytes32 hash) view returns (bool exists, uint256 timestamp, address notary, string recordType)',
-  'function records(bytes32) view returns (uint256 timestamp, address notary, string recordType)',
-];
+function loadAbi() {
+  try {
+    const abiPath = path.resolve(__w3dn, '..', '..', '..', 'contracts', 'build', 'Notary_sol_Notary.abi');
+    if (fs.existsSync(abiPath)) {
+      return JSON.parse(fs.readFileSync(abiPath, 'utf8'));
+    }
+  } catch {}
+  return [
+    'event Notarized(bytes32 indexed hash, string recordType, address indexed notary, uint256 timestamp)',
+    'function notarize(bytes32 hash, string recordType)',
+    'function verify(bytes32 hash) view returns (bool exists, uint256 timestamp, address notary, string recordType)',
+    'function records(bytes32) view returns (uint256 timestamp, address notary, string recordType)',
+  ];
+}
+const NOTARY_ABI = loadAbi();
 
 /** 各网络默认 RPC（用户也可在 .env 覆盖 WEB3_RPC_URL） */
 const DEFAULT_RPC = {

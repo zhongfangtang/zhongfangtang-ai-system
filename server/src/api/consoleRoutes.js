@@ -15,6 +15,7 @@
 import { Router } from 'express';
 import axios from 'axios';
 import config from '../../config/default.js';
+import complianceService from '../services/ComplianceService.js';
 import {
   Content,
   InterceptionLead,
@@ -184,6 +185,8 @@ router.post('/content/generate', async (req, res) => {
     } else {
       draft = composeDraft({ platform, constitution, topic, type });
     }
+    // 合规清洗：规避医疗宣称 / 广告法违禁词（如 治疗/治愈/抗炎/排毒 等）
+    draft = complianceService.sanitizeFields(draft);
     const doc = await Content.create({
       title: draft.title,
       body: draft.body,

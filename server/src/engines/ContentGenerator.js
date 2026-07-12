@@ -18,6 +18,7 @@
 import axios from 'axios';
 import config from '../../config/default.js';
 import { createModuleLogger } from '../utils/logger.js';
+import complianceService from '../services/ComplianceService.js';
 
 const logger = createModuleLogger('ContentGenerator');
 
@@ -128,7 +129,7 @@ export default class ContentGenerator {
 
 请输出JSON格式：{"title": "...", "content": "...", "hashtags": [...]}`;
 
-      const generated = await this._callAI(prompt);
+      const generated = complianceService.sanitizeFields(await this._callAI(prompt));
 
       /** 追加LBS标签 */
       const allTags = [...(generated.hashtags || []), ...lbsTags.slice(0, 3)];
@@ -453,12 +454,17 @@ export default class ContentGenerator {
     ];
 
     const tmpl = templates[0];
+    const cleaned = complianceService.sanitizeFields({
+      title: tmpl.title,
+      body: tmpl.body,
+      hashtags: this._matchHashtags(platform, topic, constitution),
+    });
     return {
       success: true,
       data: {
-        title: tmpl.title,
-        body: tmpl.body,
-        hashtags: this._matchHashtags(platform, topic, constitution),
+        title: cleaned.title,
+        body: cleaned.body,
+        hashtags: cleaned.hashtags,
         platform,
         generatedAt: new Date().toISOString(),
         source: 'fallback-template',

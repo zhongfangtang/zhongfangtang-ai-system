@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中芳堂美业全域AI智能体系统 · 统一入口</title>
+<meta name="description" content="中芳堂中医芳香疗法美业全域AI智能体系统统一入口：系统总览、Web3品牌馆、BI数据中台。">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#d4a853;--gold-soft:rgba(212,168,83,.14);--gold-line:rgba(212,168,83,.28);
+  --bg:#0f0f1a;--bg2:#13131c;--ink:#e0e0f0;--muted:#7a7689;--blue:#5B7FBD;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+.skip-link{position:absolute;left:-999px;top:0;background:var(--gold);color:#1a1a2e;padding:8px 14px;border-radius:0 0 8px 0;z-index:50}
+.skip-link:focus{left:0}
+header.top{background:linear-gradient(135deg,#0f0f1a,#1a1a2e 60%,#16213e);border-bottom:1px solid var(--gold-line);padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:20}
+.logo{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,var(--gold),#b8862d);display:flex;align-items:center;justify-content:center;font-weight:800;color:#1a1a2e;font-size:20px;box-shadow:0 6px 18px rgba(212,168,83,.25)}
+.titles h1{font-size:17px;color:var(--gold);letter-spacing:.5px}
+.titles p{font-size:12px;color:var(--muted);margin-top:2px}
+.badges{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.badge{background:var(--gold-soft);border:1px solid var(--gold-line);color:var(--gold);padding:5px 12px;border-radius:18px;font-size:12px}
+nav.tabs{display:flex;gap:6px;padding:10px 16px 0;background:var(--bg2);border-bottom:1px solid rgba(255,255,255,.05);flex-wrap:wrap}
+.tab{flex:1;min-width:140px;text-align:center;padding:12px 10px;cursor:pointer;border:1px solid transparent;border-bottom:none;border-radius:10px 10px 0 0;color:var(--muted);font-size:14px;font-weight:600;transition:all .15s;background:transparent}
+.tab:hover{color:var(--gold)}
+.tab.active{color:var(--gold);background:var(--bg);border-color:rgba(255,255,255,.06);box-shadow:0 -3px 0 var(--gold) inset}
+.tab .ic{font-size:18px;display:block;margin-bottom:3px}
+.tabbar{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:var(--bg);border-bottom:1px solid rgba(255,255,255,.05)}
+.open-btn{display:inline-flex;align-items:center;gap:6px;background:var(--gold-soft);border:1px solid var(--gold-line);color:var(--gold);padding:7px 14px;border-radius:9px;font-size:13px}
+.open-btn:hover{background:rgba(212,168,83,.22);text-decoration:none}
+.status{font-size:12px;color:var(--muted)}
+main{flex:1;position:relative;background:var(--bg)}
+.frame-wrap{position:absolute;inset:0}
+iframe{width:100%;height:100%;border:0;background:#0f0f1a;display:none}
+iframe.active{display:block}
+.fallback{display:none;position:absolute;inset:0;align-items:center;justify-content:center;text-align:center;padding:40px;color:var(--muted)}
+footer{border-top:1px solid rgba(255,255,255,.05);padding:14px 20px;text-align:center;color:var(--muted);font-size:12px;background:var(--bg2)}
+.kbd{background:#1f1f2e;border:1px solid rgba(255,255,255,.1);border-radius:5px;padding:1px 7px;font-size:11px;color:var(--ink)}
+@media(max-width:560px){.badges{display:none}.tab{min-width:90px;font-size:12px}.tab .ic{font-size:15px}}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">跳到主要内容</a>
+<header class="top" role="banner">
+  <div class="logo">中</div>
+  <div class="titles">
+    <h1>中芳堂 · 美业全域AI智能体系统</h1>
+    <p>中医芳香疗法 · 植物精油养生 · 全域AI自动化运营统一入口</p>
+  </div>
+  <div class="badges">
+    <span class="badge">8大Agent</span>
+    <span class="badge">6大平台</span>
+    <span class="badge">Web3存证</span>
+    <span class="badge">BI中台</span>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="模块切换">
+  <button class="tab active" data-i="0" aria-selected="true"><span class="ic">🏠</span>系统总览</button>
+  <button class="tab" data-i="1" aria-selected="false"><span class="ic">🌐</span>Web3品牌馆</button>
+  <button class="tab" data-i="2" aria-selected="false"><span class="ic">📊</span>BI数据中台</button>
+</nav>
+
+<div class="tabbar">
+  <span class="status" id="status">正在加载「系统总览」…</span>
+  <a class="open-btn" id="openBtn" href="/overview" target="_blank" rel="noopener">↗ 在新窗口打开</a>
+</div>
+
+<main id="main" role="main">
+  <div class="frame-wrap">
+    <iframe id="f0" class="active" data-src="/overview" title="系统总览" loading="lazy"></iframe>
+    <iframe id="f1" data-src="/brand" title="Web3品牌馆" loading="lazy"></iframe>
+    <iframe id="f2" data-src="/dashboard" title="BI数据中台" loading="lazy"></iframe>
+  </div>
+  <div class="fallback" id="fb">
+    <div>
+      <p style="font-size:16px;color:var(--gold);margin-bottom:10px">此模块无法在内嵌框中显示</p>
+      <p>请点击右上角「↗ 在新窗口打开」直接访问该页面。</p>
+    </div>
+  </div>
+</main>
+
+<footer role="contentinfo">
+  中芳堂 · 屈氏美业 ｜ 宜昌市伍家岗区夷陵大道134号紫光园6号楼 ｜ 本系统由 WorkBuddy AI 搭建
+  <br>统一入口 V1.0 ｜ 三个模块共享此链接，切换上方标签即可浏览
+</footer>
+
+<script>
+(function(){
+  var tabs=document.querySelectorAll('.tab');
+  var frames=[document.getElementById('f0'),document.getElementById('f1'),document.getElementById('f2')];
+  var status=document.getElementById('status');
+  var openBtn=document.getElementById('openBtn');
+  var fb=document.getElementById('fb');
+  var names=['系统总览','Web3品牌馆','BI数据中台'];
+  var urls=['/overview','/brand','/dashboard'];
+  var tabMap={overview:0,brand:1,bi:2,dashboard:2};
+  // 延迟加载：仅激活的 iframe 才设置 src
+  function load(i){
+    var f=frames[i];
+    if(f && !f.src){ f.src=f.getAttribute('data-src'); }
+  }
+  load(0);
+  function activate(i){
+    tabs.forEach(function(t,k){var on=k==i;t.classList.toggle('active',on);t.setAttribute('aria-selected',on?'true':'false');});
+    frames.forEach(function(f,k){f.classList.toggle('active',k==i);});
+    openBtn.href=urls[i];
+    status.textContent='当前模块：「'+names[i]+'」';
+    load(i);
+  }
+  tabs.forEach(function(t){
+    t.addEventListener('click',function(){activate(parseInt(t.getAttribute('data-i'),10));});
+  });
+  // 若 iframe 加载失败，提示用新窗口打开
+  frames.forEach(function(f){
+    f.addEventListener('error',function(){ if(f.classList.contains('active')) fb.style.display='flex'; });
+  });
+  // 键盘左右切换
+  document.addEventListener('keydown',function(e){
+    var cur=0;tabs.forEach(function(t,k){if(t.classList.contains('active'))cur=k;});
+    if(e.key==='ArrowRight')activate(Math.min(2,cur+1));
+    if(e.key==='ArrowLeft')activate(Math.max(0,cur-1));
+  });
+  // 深链：?tab=brand 等直达对应标签（用于 /zft-web3 跳转）
+  (function(){
+    var m=new URLSearchParams(location.search).get('tab');
+    if(m && tabMap[m]!==undefined){ activate(tabMap[m]); }
+  })();
+})();
+</script>
+</body>
+</html>

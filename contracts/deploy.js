@@ -56,20 +56,28 @@ async function main() {
     process.exit(1);
   }
 
-  // 提示：本脚本使用已编译的 bytecode。请先用 solc 编译 Notary.sol 生成 contracts/build/Notary.bin
-  // 这里读取本地编译产物；若未编译会给出明确指引。
+  // 读取编译产物。solc 默认输出名为 Notary_sol_Notary.bin/.abi，也可尝试 Notary.bin 回退
   const fs = await import('fs');
-  const binPath = resolve(__dirname, 'build', 'Notary.bin');
-  if (!fs.existsSync(binPath)) {
-    console.error('\n❌ 未找到编译产物 contracts/build/Notary.bin');
+  const candidates = [
+    resolve(__dirname, 'build', 'Notary_sol_Notary.bin'),
+    resolve(__dirname, 'build', 'Notary.bin'),
+  ];
+  let binPath = candidates.find((p) => fs.existsSync(p));
+  if (!binPath) {
+    console.error('\n❌ 未找到编译产物 contracts/build/Notary_sol_Notary.bin');
     console.error('   请先编译合约：');
     console.error(`   ${CONTRACT_SOURCE_NOTE}`);
     console.error('   安装 solc：npm install -g solc');
     process.exit(1);
   }
+  // 加载 ABI（可选，部署时可传 []，但保存 ABI 便于后续调用）
+  const abiCandidates = [binPath.replace('.bin','.abi'), resolve(__dirname,'build','Notary.abi')];
+  let abi = [];
+  const abiPath = abiCandidates.find((p) => fs.existsSync(p));
+  if (abiPath) { try { abi = JSON.parse(fs.readFileSync(abiPath,'utf8')); } catch {} }
 
   const bytecode = '0x' + fs.readFileSync(binPath, 'utf8').trim();
-  const factory = new ethers.ContractFactory([], bytecode, wallet);
+  const factory = new ethers.ContractFactory(abi, bytecode, wallet);
 
   console.log('⏳ 部署中...');
   const contract = await factory.deploy();

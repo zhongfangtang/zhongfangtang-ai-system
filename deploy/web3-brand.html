@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中芳堂 · Web3 品牌数字资产馆</title>
+<meta name="description" content="中芳堂 Web3 品牌数字资产馆：区块链存证、会员权益凭证与正品溯源，仅用于品牌展示与会员服务。">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--gold:#d4a853;--gold-soft:rgba(212,168,83,.14);--gold-line:rgba(212,168,83,.3);--bg:#0d0d16;--bg2:#14141f;--ink:#e4e4f2;--muted:#8a8699;--blue:#5B7FBD;--ok:#4caf82;--warn:#d99a3c}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--ink);line-height:1.65;padding:0 0 60px}
+.wrap{max-width:880px;margin:0 auto;padding:0 20px}
+header.top{background:linear-gradient(135deg,#0f0f1a,#1a1a2e 60%,#16213e);border-bottom:1px solid var(--gold-line);padding:22px 20px;margin-bottom:26px}
+header.top h1{color:var(--gold);font-size:21px;letter-spacing:.5px}
+header.top p{color:var(--muted);font-size:13px;margin-top:6px}
+.tag{display:inline-block;background:var(--gold-soft);border:1px solid var(--gold-line);color:var(--gold);padding:3px 11px;border-radius:16px;font-size:12px;margin:4px 6px 0 0}
+.card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:20px 22px;margin:16px 0}
+.card h2{color:var(--gold);font-size:16px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card h3{color:var(--ink);font-size:14px;margin:14px 0 6px}
+.muted{color:var(--muted);font-size:13px}
+.kv{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.kv .item{flex:1;min-width:200px;background:#1b1b29;border:1px solid rgba(255,255,255,.05);border-radius:10px;padding:12px 14px}
+.kv .item b{color:var(--gold);font-size:12px;display:block;margin-bottom:4px;font-weight:600}
+.kv .item span{font-size:13px;word-break:break-all}
+.btn{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,var(--gold),#b8862d);color:#1a1a2e;font-weight:700;border:0;border-radius:10px;padding:11px 20px;font-size:14px;cursor:pointer;transition:.15s}
+.btn:hover{filter:brightness(1.08)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.ghost{background:var(--gold-soft);color:var(--gold);border:1px solid var(--gold-line)}
+input,textarea{width:100%;background:#1b1b29;border:1px solid rgba(255,255,255,.08);border-radius:9px;color:var(--ink);padding:10px 12px;font-size:13px;font-family:inherit;margin-top:6px}
+label{font-size:13px;color:var(--muted);display:block;margin-top:12px}
+.status{margin-top:12px;font-size:13px;padding:10px 12px;border-radius:9px;display:none}
+.status.show{display:block}
+.status.ok{background:rgba(76,175,130,.12);border:1px solid rgba(76,175,130,.4);color:var(--ok)}
+.status.err{background:rgba(217,154,60,.12);border:1px solid rgba(217,154,60,.4);color:var(--warn)}
+.status.info{background:var(--gold-soft);border:1px solid var(--gold-line);color:var(--gold)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:640px){.grid2{grid-template-columns:1fr}}
+.disclaimer{background:rgba(217,154,60,.08);border:1px dashed rgba(217,154,60,.4);border-radius:12px;padding:14px 16px;margin:18px 0;font-size:12.5px;color:var(--warn)}
+.disclaimer b{color:var(--gold)}
+ol{margin:8px 0 0 20px;font-size:13px;color:var(--muted)}
+ol li{margin:5px 0}
+.pill{font-size:11px;padding:2px 9px;border-radius:12px;border:1px solid var(--gold-line);color:var(--gold);background:var(--gold-soft)}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap" style="padding:0">
+    <h1>🌐 中芳堂 · Web3 品牌数字资产馆</h1>
+    <p>区块链存证 · 会员权益凭证 · 正品溯源 — 以技术守护品牌信任</p>
+    <div style="margin-top:10px">
+      <span class="tag">区块链存证</span><span class="tag">会员权益</span><span class="tag">数字藏品</span><span class="tag">正品溯源</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="disclaimer">
+    <b>合规说明：</b>本馆所提供的「数字藏品 / 区块链存证 / 会员权益凭证」仅用于<b>品牌展示、会员服务与正品溯源</b>，
+    不构成任何投资、金融或理财建议，不承诺任何升值、交易收益或二级市场交易。请理性参与，遵守所在地法律法规。
+  </div>
+
+  <!-- 链状态 -->
+  <div class="card">
+    <h2>🔗 链上状态</h2>
+    <div class="kv" id="chainInfo"><div class="item"><b>状态</b><span>加载中…</span></div></div>
+    <p class="muted" style="margin-top:10px">数据来自后端 <code>/api/v1/web3/info</code>。未配置写入私钥与合约时，系统自动采用「离线哈希」模式（生成可验证的内容指纹，但不上链）。</p>
+  </div>
+
+  <!-- 钱包与认领 -->
+  <div class="card">
+    <h2>👛 钱包与会员权益凭证</h2>
+    <p class="muted">连接你的 Web3 钱包，生成一份「会员权益凭证」内容指纹。该指纹可用于品牌会员体系的链上/离线存证，仅作为身份与权益的加密凭证，不涉及任何资金操作。</p>
+    <div class="grid2" style="margin-top:14px">
+      <div>
+        <button class="btn" id="connectBtn">连接钱包</button>
+        <p class="muted" id="walletAddr" style="margin-top:8px">未连接</p>
+      </div>
+      <div>
+        <label>会员手机号 / 会员编号（仅用于生成本地指纹，不上链明文）</label>
+        <input id="memberId" placeholder="如 M2026-0001" />
+      </div>
+    </div>
+    <label>凭证备注（可选，如「2026 年度芳香疗护会员」）</label>
+    <input id="memberNote" placeholder="权益说明" />
+    <div style="margin-top:14px">
+      <button class="btn ghost" id="claimBtn" disabled>生成权益凭证指纹</button>
+    </div>
+    <div class="status" id="claimStatus"></div>
+  </div>
+
+  <!-- 存证验证 -->
+  <div class="card">
+    <h2>🔎 存证验证</h2>
+    <p class="muted">输入内容哈希（0x + 64 位十六进制），查询该内容是否已在链上存证。</p>
+    <label>内容哈希 hash</label>
+    <input id="verifyHash" placeholder="0x…" />
+    <div style="margin-top:12px">
+      <button class="btn ghost" id="verifyBtn">查询存证</button>
+    </div>
+    <div class="status" id="verifyStatus"></div>
+  </div>
+
+  <!-- 存证说明 -->
+  <div class="card">
+    <h2>📜 我们如何做存证（合规架构）</h2>
+    <ol>
+      <li><b>只存哈希，不存明文</b>：上链的是内容 keccak256 指纹，业务数据（客户信息、服务记录）永不写入公链，保护隐私。</li>
+      <li><b>不可篡改、可公开验证</b>：存证后任何人都可在区块浏览器按哈希核验，证明内容在某时刻已存在且未被改动。</li>
+      <li><b>用途明确</b>：服务记录存证、产品正品溯源、资质证书锚定——服务于品牌信任与会员权益，而非发行可炒作的代币。</li>
+      <li><b>主网切换</b>：当前默认 Sepolia 测试网验证链路；配置 funded 钱包与 <code>WEB3_CONTRACT_ADDRESS</code> 后即可一键切到所选主网，部署脚本与合约已就绪。</li>
+    </ol>
+    <p class="muted" style="margin-top:12px">合约：<code>contracts/Notary.sol</code>（MIT）。后端服务：<code>Web3Service</code>。部署：<code>node contracts/deploy.js</code>。</p>
+  </div>
+
+  <footer style="text-align:center;color:var(--muted);font-size:12px;margin-top:24px">
+    中芳堂 · 屈氏美业 ｜ 本馆由 WorkBuddy AI 搭建，遵循所在地 Web3 相关合规要求
+  </footer>
+</div>
+
+<script>
+const $ = (s)=>document.querySelector(s);
+const API = ''; // 同源相对地址
+
+function setStatus(el, type, msg){ el.className='status show '+type; el.innerHTML=msg; }
+
+async function loadChainInfo(){
+  try{
+    const r = await fetch(API+'/api/v1/web3/info');
+    const j = await r.json();
+    const d = j.data||{};
+    const items = [
+      ['网络', d.network || '—'],
+      ['Chain ID', d.chainId || '—'],
+      ['合约地址', d.contractAddress || '未配置（离线哈希模式）'],
+      ['可写入', d.canWrite ? '是（已配置私钥+合约）' : '否（离线哈希模式）'],
+    ];
+    $('#chainInfo').innerHTML = items.map(([k,v])=>`<div class="item"><b>${k}</b><span>${v}</span></div>`).join('');
+  }catch(e){ $('#chainInfo').innerHTML='<div class="item"><b>状态</b><span>获取失败：'+e.message+'</span></div>'; }
+}
+loadChainInfo();
+
+// 钱包连接（原生 window.ethereum，无外部依赖）
+let provider, account;
+$('#connectBtn').onclick = async ()=>{
+  if(!window.ethereum){ setStatus($('#claimStatus'),'err','未检测到 Web3 钱包（如 MetaMask），请先安装。'); return; }
+  try{
+    const accts = await window.ethereum.request({method:'eth_requestAccounts'});
+    account = accts[0];
+    $('#walletAddr').textContent = '已连接：'+account.slice(0,6)+'…'+account.slice(-4);
+    $('#claimBtn').disabled = false;
+    setStatus($('#claimStatus'),'ok','钱包已连接，可生成权益凭证指纹。');
+  }catch(e){ setStatus($('#claimStatus'),'err','连接被拒绝：'+e.message); }
+};
+
+// 生成会员权益凭证指纹（本地 keccak256，可叠加后端存证）
+$('#claimBtn').onclick = async ()=>{
+  const memberId = $('#memberId').value.trim();
+  const note = $('#memberNote').value.trim();
+  if(!memberId){ setStatus($('#claimStatus'),'err','请填写会员编号。'); return; }
+  if(!account){ setStatus($('#claimStatus'),'err','请先连接钱包。'); return; }
+  try{
+    const payload = JSON.stringify({memberId, note, wallet:account, ts:Date.now(), brand:'zhongfangtang'});
+    // 用钱包对内容签名（作为凭证，不离开浏览器）
+    const msgHash = await window.ethereum.request({method:'eth_accounts'});
+    const signature = await window.ethereum.request({method:'personal_sign', params:[account, '0x'+toHex(payload)]});
+    const hash = await sha256Hex(payload);
+    setStatus($('#claimStatus'),'info',
+      `✅ 已生成权益凭证指纹<br>本地指纹(hash)：<code>${hash.slice(0,20)}…</code><br>钱包签名：<code>${signature.slice(0,18)}…</code><br><br>`+
+      `该指纹可提交运营后台「Web3 存证」接口进行链上/离线存证。本操作不涉及任何资金转账。`);
+  }catch(e){ setStatus($('#claimStatus'),'err','生成失败：'+e.message); }
+};
+
+function toHex(s){ return Array.from(new TextEncoder().encode(s)).map(b=>b.toString(16).padStart(2,'0')).join(''); }
+async function sha256Hex(s){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return '0x'+Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// 存证验证
+$('#verifyBtn').onclick = async ()=>{
+  const h = $('#verifyHash').value.trim();
+  if(!/^0x[a-fA-F0-9]{64}$/.test(h)){ setStatus($('#verifyStatus'),'err','哈希格式有误：应为 0x + 64 位十六进制。'); return; }
+  setStatus($('#verifyStatus'),'info','查询中…');
+  try{
+    const r = await fetch(API+'/api/v1/web3/verify?hash='+encodeURIComponent(h));
+    const j = await r.json();
+    const d = j.data||{};
+    if(d.verified===true){
+      setStatus($('#verifyStatus'),'ok',`✅ 已在链上存证<br>存证时间：${new Date(Number(d.timestamp)*1000).toLocaleString()}<br>存证者：${d.notarizedBy}<br>类型：${d.recordType}`);
+    }else if(d.verified===false){
+      setStatus($('#verifyStatus'),'warn','未在链上找到该哈希的存证记录。');
+    }else{
+      setStatus($('#verifyStatus'),'warn', j.message || '当前未启用链上验证。');
+    }
+  }catch(e){ setStatus($('#verifyStatus'),'err','查询失败：'+e.message); }
+};
+</script>
+</body>
+</html>
