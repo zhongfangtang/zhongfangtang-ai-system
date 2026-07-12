@@ -132,7 +132,10 @@ async function tryLLM(prompt) {
         { timeout: 45000, headers: { Authorization: `Bearer ${config.ai.apiKey}` } }
       );
       const content = r.data?.choices?.[0]?.message?.content?.trim();
-      if (content) return content;
+      if (content) {
+        // 清洗 AI 返回中的非法控制字符（免费模型偶有），避免 JSON 序列化炸裂
+        return content.replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g, '');
+      }
       return null;
     } catch (e) {
       if (attempt === 1) {
