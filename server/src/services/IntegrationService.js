@@ -197,6 +197,53 @@ class IntegrationService {
     }
   }
 
+  /**
+   * 给企业内部成员发通知（自建应用 message/send）
+   * 未认证企业微信也可用 —— 仅依赖 corpId + corpSecret + agentId，
+   * 不需要可信域名/回调（那些才需认证）。
+   * @param {object} opt
+   * @param {string} opt.touser  接收人 userid（多个用 '|' 分隔，如 'zhang|li'；@all 全体）
+   * @param {string} opt.content 文本正文（text 模式）或 textcard 的描述
+   * @param {string} [opt.title] textcard 标题
+   * @param {string} [opt.url]    textcard 点击跳转链接
+   * @param {'text'|'textcard'} [opt.msgtype] 默认 text
+   */
+  async notifyWeworkInternal(opt = {}) {
+    const cfg = config.wework;
+    if (!(cfg.corpId && cfg.corpSecret && cfg.agentId)) {
+      return { success: false, reason: '企业微信未配置 corpId/corpSecret/agentId（内部通知仅这三项必填）' };
+    }
+    const { touser, content, title, url, msgtype = 'text' } = opt;
+    if (!touser || !content) {
+      return { success: false, reason: '缺少接收人(touser)或内容(content)' };
+    }
+    try {
+      const token = await this._weworkToken(cfg);
+      const body = { touser, msgtype, agentid: Number(cfg.agentId) };
+      if (msgtype === 'textcard') {
+        body.textcard = {
+          title: title || '中芳堂通知',
+          description: content,
+          url: url || '',
+          btntxt: '查看',
+        };
+      } else {
+        body.text = { content };
+      }
+      const resp = await axios.post(`${cfg.apiBase}/message/send`, body, {
+        params: { access_token: token }, timeout: 10000,
+      });
+      if (resp.data?.errcode !== 0) {
+        throw new Error(resp.data?.errmsg || `企微发送失败 errcode=${resp.data?.errcode}`);
+      }
+      logger.info('企微内部通知已发送', { touser, msgtype });
+      return { success: true, touser, msgtype, invaliduser: resp.data.invaliduser || '' };
+    } catch (err) {
+      logger.error('企微内部通知失败', { error: err.message });
+      return { success: false, error: err.message };
+    }
+  }
+
   // ============ 腕家 H1 健康数据 ============
 
   /** 拉取指定客户的腕家H1健康数据，写入客户档案 */
