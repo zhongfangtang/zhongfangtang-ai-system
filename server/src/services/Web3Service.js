@@ -170,8 +170,16 @@ class Web3Service {
         notarizedBy: this.wallet.address,
       };
     } catch (err) {
-      logger.error('存证上链失败', { module: 'Web3Service', error: err.message });
-      return { success: false, onChain: false, hash, type, meta, error: err.message };
+      // Gas 不足 / 合约未部署 / 网络问题 → 自动降级为离线哈希
+      logger.warn('存证上链失败，已降级为离线哈希模式', { module: 'Web3Service', hash, error: err.message });
+      return {
+        success: true,
+        onChain: false,
+        hash,
+        type,
+        meta,
+        reason: '链上存证失败（可能是Gas不足或合约未部署），已生成离线哈希。原因：' + (err.shortMessage || err.message),
+      };
     }
   }
 
