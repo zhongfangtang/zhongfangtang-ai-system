@@ -271,6 +271,209 @@ reportSchema.index({ type: 1, period: 1 }, { unique: true });
 
 export const Report = mongoose.model('Report', reportSchema);
 
+/**
+ * 分销关系模型（链动2+1）
+ * userId 唯一，parentId 指向推荐人，level 表示层级
+ */
+const distributionSchema = new mongoose.Schema({
+  userId: { type: String, required: true, unique: true },       // 分销员ID
+  userName: { type: String },
+  parentId: { type: String },                                   // 上级分销员ID(链动2+1)
+  level: { type: Number, default: 0 },                          // 分销层级(0-2)
+  status: { type: String, enum: ['active', 'frozen', 'banned'], default: 'active' },
+  totalCommission: { type: Number, default: 0 },                // 累计佣金
+  availableCommission: { type: Number, default: 0 },            // 可提现佣金
+  teamSize: { type: Number, default: 0 },                       // 团队人数
+  directCount: { type: Number, default: 0 },                    // 直推人数
+  createdAt: { type: Date, default: Date.now },
+});
+
+distributionSchema.index({ parentId: 1 });
+distributionSchema.index({ level: 1 });
+
+export const Distribution = mongoose.model('Distribution', distributionSchema);
+
+/**
+ * 佣金记录模型
+ */
+const commissionSchema = new mongoose.Schema({
+  orderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Order' },
+  distributorId: { type: String, required: true },
+  fromUserId: { type: String },                                  // 来源用户
+  fromUserName: { type: String },
+  level: { type: Number },                                       // 佣金层级(1直推/2间推)
+  amount: { type: Number, required: true },
+  rate: { type: Number },                                        // 佣金比例
+  status: { type: String, enum: ['pending', 'settled', 'withdrawn'], default: 'pending' },
+  settledAt: { type: Date },
+  createdAt: { type: Date, default: Date.now },
+});
+
+commissionSchema.index({ distributorId: 1, status: 1 });
+
+export const Commission = mongoose.model('Commission', commissionSchema);
+
+/**
+ * 积分记录模型
+ */
+const pointsRecordSchema = new mongoose.Schema({
+  customerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Customer' },
+  customerName: { type: String },
+  type: { type: String, enum: ['earn', 'spend', 'expire', 'adjust'] },
+  amount: { type: Number, required: true },
+  balance: { type: Number },
+  source: { type: String },                                      // 来源(消费/签到/推荐/活动)
+  reference: { type: String },                                   // 关联订单/活动ID
+  description: { type: String },
+  createdAt: { type: Date, default: Date.now },
+});
+
+pointsRecordSchema.index({ customerId: 1, createdAt: -1 });
+
+export const PointsRecord = mongoose.model('PointsRecord', pointsRecordSchema);
+
+/**
+ * 积分商品模型（积分商城）
+ */
+const pointsProductSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  type: { type: String, enum: ['service', 'product', 'coupon', 'beautycoin'] },
+  points: { type: Number, required: true },
+  stock: { type: Number, default: -1 },                          // -1无限
+  image: { type: String },
+  description: { type: String },
+  status: { type: String, enum: ['active', 'inactive'], default: 'active' },
+  createdAt: { type: Date, default: Date.now },
+});
+
+export const PointsProduct = mongoose.model('PointsProduct', pointsProductSchema);
+
+/**
+ * 金融方案模型（分期/先享后付/保险/联盟）
+ */
+const financePlanSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  type: { type: String, enum: ['installment', 'bnpl', 'insurance', 'alliance'] },
+  provider: { type: String },                                    // 提供方
+  config: { type: mongoose.Schema.Types.Mixed },                 // 配置(期数/费率等)
+  status: { type: String, enum: ['active', 'inactive'], default: 'active' },
+  createdAt: { type: Date, default: Date.now },
+});
+
+export const FinancePlan = mongoose.model('FinancePlan', financePlanSchema);
+
+/**
+ * 金融申请模型
+ */
+const financeApplicationSchema = new mongoose.Schema({
+  customerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Customer' },
+  customerName: { type: String },
+  orderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Order' },
+  planId: { type: mongoose.Schema.Types.ObjectId, ref: 'FinancePlan' },
+  planName: { type: String },
+  amount: { type: Number, required: true },
+  periods: { type: Number },
+  status: { type: String, enum: ['pending', 'approved', 'rejected', 'completed', 'overdue'], default: 'pending' },
+  result: { type: mongoose.Schema.Types.Mixed },
+  createdAt: { type: Date, default: Date.now },
+});
+
+financeApplicationSchema.index({ customerId: 1, status: 1 });
+
+export const FinanceApplication = mongoose.model('FinanceApplication', financeApplicationSchema);
+
+/**
+ * 视频制作任务模型
+ */
+const videoTaskSchema = new mongoose.Schema({
+  contentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Content' },
+  title: { type: String },
+  script: { type: mongoose.Schema.Types.Mixed },                 // 分镜脚本
+  status: { type: String, enum: ['pending', 'processing', 'completed', 'failed', 'reviewing'], default: 'pending' },
+  progress: { type: Number, default: 0 },
+  outputUrl: { type: String },                                   // 成品视频URL
+  platforms: [{ type: String }],                                 // 目标平台
+  subtitles: { type: mongoose.Schema.Types.Mixed },             // 字幕数据
+  audio: { type: String },                                       // 配音文件
+  duration: { type: Number },                                    // 时长(秒)
+  template: { type: String },
+  error: { type: String },
+  createdAt: { type: Date, default: Date.now },
+  completedAt: { type: Date },
+});
+
+videoTaskSchema.index({ status: 1, createdAt: -1 });
+
+export const VideoTask = mongoose.model('VideoTask', videoTaskSchema);
+
+/**
+ * 链上交易记录模型
+ */
+const web3TransactionSchema = new mongoose.Schema({
+  hash: { type: String, required: true, unique: true },
+  type: { type: String, enum: ['notarize', 'points', 'beautycoin', 'nft'] },
+  txHash: { type: String },
+  network: { type: String },
+  status: { type: String, enum: ['pending', 'confirmed', 'failed'], default: 'pending' },
+  payload: { type: mongoose.Schema.Types.Mixed },
+  blockNumber: { type: Number },
+  createdAt: { type: Date, default: Date.now },
+});
+
+web3TransactionSchema.index({ type: 1, createdAt: -1 });
+
+export const Web3Transaction = mongoose.model('Web3Transaction', web3TransactionSchema);
+
+/**
+ * 异业联盟伙伴模型
+ */
+const alliancePartnerSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  industry: { type: String, enum: ['insurance', 'mobile', 'travel', 'other'] },
+  contactInfo: { type: mongoose.Schema.Types.Mixed },
+  agreement: { type: mongoose.Schema.Types.Mixed },              // 合作协议
+  coMarketing: { type: mongoose.Schema.Types.Mixed },           // 联合营销活动
+  status: { type: String, enum: ['active', 'inactive', 'pending'], default: 'active' },
+  createdAt: { type: Date, default: Date.now },
+});
+
+export const AlliancePartner = mongoose.model('AlliancePartner', alliancePartnerSchema);
+
+/**
+ * Agent运行日志模型
+ */
+const agentRunLogSchema = new mongoose.Schema({
+  agentId: { type: String, required: true },
+  agentName: { type: String },
+  trigger: { type: String },
+  input: { type: mongoose.Schema.Types.Mixed },
+  output: { type: mongoose.Schema.Types.Mixed },
+  duration: { type: Number },
+  status: { type: String, enum: ['success', 'failed', 'degraded'] },
+  error: { type: String },
+  createdAt: { type: Date, default: Date.now },
+});
+
+agentRunLogSchema.index({ agentId: 1, createdAt: -1 });
+
+export const AgentRunLog = mongoose.model('AgentRunLog', agentRunLogSchema);
+
+/**
+ * 预测结果模型
+ */
+const predictionResultSchema = new mongoose.Schema({
+  type: { type: String, enum: ['churn', 'sales', 'revenue'] },
+  period: { type: String },                                      // 预测周期
+  target: { type: String },                                      // 预测目标
+  result: { type: mongoose.Schema.Types.Mixed },
+  confidence: { type: Number },
+  createdAt: { type: Date, default: Date.now },
+});
+
+predictionResultSchema.index({ type: 1, createdAt: -1 });
+
+export const PredictionResult = mongoose.model('PredictionResult', predictionResultSchema);
+
 export default {
   connectDatabase,
   Content,
@@ -282,4 +485,15 @@ export default {
   PlatformAccount,
   SyncLog,
   Report,
+  Distribution,
+  Commission,
+  PointsRecord,
+  PointsProduct,
+  FinancePlan,
+  FinanceApplication,
+  VideoTask,
+  Web3Transaction,
+  AlliancePartner,
+  AgentRunLog,
+  PredictionResult,
 };

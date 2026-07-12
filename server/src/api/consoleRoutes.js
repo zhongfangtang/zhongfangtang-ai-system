@@ -207,6 +207,60 @@ router.post('/content/generate', async (req, res) => {
   }
 });
 
+// ==================== 视频脚本生成（含降级，不依赖AI密钥） ====================
+router.post('/content/generate-video', async (req, res) => {
+  try {
+    const { platform = 'xiaohongshu', topic = '九体辨识精油调理', constitution = '平和质', duration = 60 } = req.body;
+    const ps = PLATFORM_STYLE[platform] || PLATFORM_STYLE.xiaohongshu;
+    const ct = CONSTITUTION[constitution] || CONSTITUTION['平和质'];
+    const oilEntries = Object.entries(OILS);
+    const pickOil = oilEntries[Math.floor(Math.random() * oilEntries.length)];
+    const [oilName, oilEffect] = pickOil;
+
+    // 生成分镜脚本（降级模式，无AI密钥可用）
+    const scenes = [];
+    const totalScenes = Math.min(8, Math.ceil(duration / 10));
+
+    for (let i = 0; i < totalScenes; i++) {
+      const sceneDuration = i === 0 ? 3 : Math.floor((duration - 3) / (totalScenes - 1));
+      const sceneTypes = [
+        { desc: '特写中芳堂门头，金色logo，优雅环境', narration: '大家好，我是中芳堂体质调理师小芳。今天聊聊' + topic, camera: '推镜头' },
+        { desc: '展示精油瓶特写，光线柔和', narration: `${oilName}精油——${oilEffect}。搭配九体辨识复方精油，效果更佳`, camera: '微距' },
+        { desc: '中医体质辨识过程展示', narration: `很多${constitution}的朋友都有${ct.kw[0]}的困扰`, camera: '中景' },
+        { desc: '精油按摩手法演示', narration: `在家就能做的${oilName}精油推拿手法，跟我学`, camera: '特写手部' },
+        { desc: '到店体验场景', narration: '宜昌的姐妹可以直接来中芳堂门店体验，一对一辨体质定方案', camera: '全景' },
+        { desc: '客户反馈/效果对比', narration: '看看这位姐妹调理前后的变化，效果真的很明显', camera: '切换' },
+        { desc: '产品展示+二维码', narration: '今天直播间下单有专属优惠，记得领券哦', camera: '俯拍' },
+        { desc: '品牌logo+关注引导', narration: '关注中芳堂，每天学点中医养生知识', camera: '固定' },
+      ];
+      const st = sceneTypes[i % sceneTypes.length];
+      scenes.push({ number: i + 1, description: st.desc, narration: st.narration, duration: sceneDuration, camera: st.camera, transition: '淡入淡出' });
+    }
+
+    // 保存为内容
+    const doc = await Content.create({
+      title: `🎬 ${topic} - ${platform}视频脚本`,
+      body: scenes.map(s => `【镜头${s.number}】${s.description}\n台词：${s.narration}`).join('\n\n'),
+      platform,
+      type: 'video',
+      hashtags: [`#${constitution}调理`, `#${oilName}精油`, '#宜昌美容'],
+      constitution,
+      aiGenerated: false,
+      status: 'draft',
+      generatedBy: req.user?.userId || 'console',
+      metadata: { scenes, totalDuration: duration },
+    });
+
+    res.json({
+      success: true,
+      data: { ...doc.toObject(), scenes, totalDuration: duration, platform },
+      message: '视频脚本已生成并保存',
+    });
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
+  }
+});
+
 router.put('/content/:id/status', async (req, res) => {
   const d = await Content.findByIdAndUpdate(req.params.id, { status: req.body.status, updatedAt: new Date() }, { new: true });
   if (!d) return res.status(404).json({ success: false, message: '内容不存在' });

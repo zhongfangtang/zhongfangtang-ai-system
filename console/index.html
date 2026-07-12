@@ -3,293 +3,237 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>中芳堂 · 运营后台</title>
+<title>中芳堂 · 运营后台 V5.1</title>
 <style>
-  :root{--bg:#0f0f1a;--card:#1a1a2e;--gold:#d4a853;--gold2:#e8c97a;--line:#2a2a44;--txt:#e8e8f0;--mut:#8a8aa0;--grn:#3fb98a;--red:#e06c6c;--blue:#5b9bd5}
-  *{box-sizing:border-box}
-  body{margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--txt);font-size:14px}
-  a{color:var(--gold2)}
-  .wrap{max-width:1080px;margin:0 auto;padding:20px}
-  .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:linear-gradient(90deg,#1a1a2e,#221a12);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
-  .brand{font-weight:700;font-size:18px;color:var(--gold)}
-  .brand small{color:var(--mut);font-weight:400;font-size:12px;margin-left:8px}
-  .user{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--mut)}
-  .btn{background:var(--gold);color:#1a1a2e;border:0;padding:9px 16px;border-radius:8px;font-weight:600;cursor:pointer;font-size:13px}
-  .btn:hover{background:var(--gold2)}
+  :root{--bg:#0a0a14;--card:#12121f;--gold:#d4a853;--gold2:#e8c97a;--line:#1e1e36;--txt:#e2e2ec;--mut:#7878a0;--grn:#3fb98a;--red:#e06c6c;--blue:#5b9bd5;--pur:#a78bfa;--pink:#f472b6;--cyan:#22d3ee}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--txt);font-size:14px;line-height:1.5}
+  ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--line);border-radius:10px}
+  a{color:var(--gold2);text-decoration:none}
+  .layout{display:flex;min-height:100vh}
+  /* Sidebar */
+  .sidebar{width:200px;background:linear-gradient(180deg,#0d0d1a,#12121f);border-right:1px solid var(--line);position:fixed;top:0;bottom:0;left:0;overflow-y:auto;z-index:10;transition:width .2s}
+  .sidebar .brand{padding:20px 16px;border-bottom:1px solid var(--line);background:linear-gradient(135deg,rgba(212,168,83,.08),transparent)}
+  .sidebar .brand h2{font-size:17px;color:var(--gold);letter-spacing:1px;display:flex;align-items:center;gap:8px}
+  .sidebar .brand small{display:block;color:var(--mut);font-size:10px;margin-top:4px;letter-spacing:2px;text-transform:uppercase}
+  .nav-group{padding:8px 0}
+  .nav-group .title{padding:8px 16px 4px;font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:2px}
+  .nav-group a{display:flex;align-items:center;gap:10px;padding:9px 16px;color:var(--mut);font-size:13px;transition:.15s;border-left:3px solid transparent;text-decoration:none}
+  .nav-group a:hover{background:rgba(212,168,83,.06);color:var(--txt)}
+  .nav-group a.on{background:rgba(212,168,83,.12);color:var(--gold);border-left-color:var(--gold);font-weight:600}
+  .nav-group a .ico{width:18px;text-align:center;font-size:14px}
+  .nav-group a .badge-nav{font-size:10px;background:var(--gold);color:#0a0a14;padding:1px 6px;border-radius:8px;margin-left:auto}
+  /* Main */
+  .main{margin-left:200px;flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;background:rgba(18,18,31,.95);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;backdrop-filter:blur(10px)}
+  .topbar h1{margin:0;font-size:16px;color:var(--txt);font-weight:600}
+  .topbar .user{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--mut)}
+  .content{padding:20px 24px;flex:1;overflow-y:auto}
+  /* Login */
+  #login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:50}
+  .login-card{width:360px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:32px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .login-card h2{margin:0 0 6px;color:var(--gold);font-size:22px}
+  .login-card .sub{color:var(--mut);font-size:12px;margin-bottom:20px}
+  /* Cards */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px;transition:border-color .2s}
+  .card:hover{border-color:rgba(212,168,83,.2)}
+  .card h3{margin:0 0 14px;color:var(--gold2);font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+  /* Grids */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  /* Stats */
+  .stat-card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;position:relative;overflow:hidden}
+  .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent)}
+  .stat-card .num{font-size:30px;font-weight:700;color:var(--gold)}
+  .stat-card .lbl{color:var(--mut);font-size:11px;margin-top:4px}
+  .stat-card .sub{color:var(--grn);font-size:10px;margin-top:4px}
+  /* Form */
+  input,select,textarea{width:100%;background:#0a0a18;color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;font-family:inherit;transition:border-color .2s}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,83,.1)}
+  label{display:block;color:var(--mut);font-size:11px;margin:8px 0 3px;font-weight:500}
+  /* Buttons */
+  .btn{background:var(--gold);color:#0a0a14;border:0;padding:9px 16px;border-radius:8px;font-weight:600;cursor:pointer;font-size:13px;display:inline-flex;align-items:center;gap:6px;transition:.15s}
+  .btn:hover{background:var(--gold2);transform:translateY(-1px)}
+  .btn:active{transform:translateY(0)}
   .btn.ghost{background:transparent;color:var(--mut);border:1px solid var(--line)}
-  .btn.sm{padding:5px 10px;font-size:12px}
+  .btn.ghost:hover{background:rgba(255,255,255,.04);color:var(--txt)}
   .btn.blue{background:var(--blue);color:#fff}
-  input,select,textarea{width:100%;background:#12121f;color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:13px;font-family:inherit}
-  label{display:block;color:var(--mut);font-size:12px;margin:10px 0 4px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-  .tabs{display:flex;gap:6px;margin:18px 0}
-  .tab{padding:9px 16px;border-radius:8px;cursor:pointer;color:var(--mut);border:1px solid transparent;font-weight:600}
-  .tab.on{color:var(--gold);background:#221a12;border-color:var(--line)}
-  .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600}
-  .b-draft{background:#33334d;color:#cdd}
-  .b-pending{background:#3a3320;color:var(--gold2)}
-  .b-reviewing{background:#2a3a4a;color:var(--blue)}
-  .b-published{background:#1f3a2e;color:var(--grn)}
-  .b-new{background:#33334d;color:#cdd}
-  .b-contacted{background:#2a3a4a;color:var(--blue)}
-  .b-converted{background:#1f3a2e;color:var(--grn)}
-  .b-high{background:#3a1f1f;color:var(--red)}
-  .row{display:flex;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}
+  .btn.green{background:var(--grn);color:#fff}
+  .btn.sm{padding:5px 11px;font-size:11px}
+  .btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+  /* Badges */
+  .badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:.5px}
+  .b-draft{background:rgba(120,120,160,.15);color:#cdd}
+  .b-pending{background:rgba(212,168,83,.15);color:var(--gold2)}
+  .b-reviewing{background:rgba(91,155,213,.15);color:var(--blue)}
+  .b-published,.b-active,.b-running{background:rgba(63,185,138,.15);color:var(--grn)}
+  .b-new{background:rgba(120,120,160,.15);color:#cdd}
+  .b-contacted{background:rgba(91,155,213,.15);color:var(--blue)}
+  .b-converted{background:rgba(63,185,138,.15);color:var(--grn)}
+  .b-high{background:rgba(224,108,108,.15);color:var(--red)}
+  .b-paused{background:rgba(212,168,83,.15);color:var(--gold2)}
+  .b-error{background:rgba(224,108,108,.15);color:var(--red)}
+  .b-degraded{background:rgba(167,139,250,.15);color:var(--pur)}
+  /* Table */
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th{text-align:left;color:var(--mut);font-weight:500;padding:8px 12px;border-bottom:1px solid var(--line);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+  td{padding:9px 12px;border-bottom:1px solid rgba(30,30,54,.5)}
+  tr:hover td{background:rgba(212,168,83,.03)}
+  /* Row */
+  .row{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(30,30,54,.5)}
   .row:last-child{border-bottom:0}
-  .row .meta{color:var(--mut);font-size:12px}
   .grow{flex:1;min-width:0}
   .ell{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .stat{display:flex;flex-direction:column;gap:4px}
-  .stat b{font-size:26px;color:var(--gold)}
-  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#2a2a44;color:#fff;padding:11px 20px;border-radius:10px;opacity:0;transition:.3s;z-index:20;font-size:13px;border:1px solid var(--line)}
+  .meta{color:var(--mut);font-size:11px}
+  /* Toast */
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e1e36;color:#fff;padding:12px 24px;border-radius:10px;opacity:0;transition:.3s;z-index:100;font-size:13px;border:1px solid var(--line);box-shadow:0 8px 32px rgba(0,0,0,.4)}
   .toast.show{opacity:1}
-  .hint{color:var(--mut);font-size:12px;margin-top:6px}
-  pre{white-space:pre-wrap;word-break:break-word;background:#12121f;border:1px solid var(--line);border-radius:8px;padding:11px;font-size:12px;line-height:1.6;max-height:240px;overflow:auto}
-  #login{display:flex;align-items:center;justify-content:center;min-height:100vh}
-  .login-card{width:340px}
-  .login-card h2{margin:0 0 4px;color:var(--gold)}
-  #app{display:none}
-  .pill{font-size:11px;color:var(--mut);border:1px solid var(--line);border-radius:20px;padding:2px 9px}
-  .ok{color:var(--grn)} .err{color:var(--red)}
+  .hint{color:var(--mut);font-size:11px;margin-top:6px}
+  .pill{font-size:10px;padding:3px 10px;border-radius:20px;border:1px solid var(--line)}
+  .ok{color:var(--grn)}.err{color:var(--red)}.warn{color:var(--gold2)}
+  pre{white-space:pre-wrap;word-break:break-word;background:#0a0a18;border:1px solid var(--line);border-radius:8px;padding:12px;font-size:12px;line-height:1.7;max-height:300px;overflow:auto}
+  /* Utils */
+  .mt12{margin-top:12px}.mt16{margin-top:16px}.mt20{margin-top:20px}
+  .flex{display:flex}.gap6{gap:6px}.gap10{gap:10px}.gap16{gap:16px}
+  .loading{text-align:center;padding:60px;color:var(--mut)}
+  .spinner{display:inline-block;width:28px;height:28px;border:3px solid var(--line);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .empty{text-align:center;padding:40px;color:var(--mut);font-size:13px}
+  /* Responsive */
+  @media(max-width:1200px){.grid4{grid-template-columns:1fr 1fr}.grid3{grid-template-columns:1fr 1fr}}
+  @media(max-width:768px){.sidebar{width:60px}.sidebar .brand h2 span,.sidebar .nav-group a span,.sidebar .nav-group .title,.sidebar .brand small{display:none}.main{margin-left:60px}.grid2,.grid3,.grid4{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
+<!-- 登录 -->
 <div id="login">
-  <div class="card login-card">
+  <div class="login-card">
     <h2>中芳堂 · 运营后台</h2>
-    <div class="hint">登录后可使用真实运营功能（内容生成 / 线索 / 客户 / 发布）</div>
+    <div class="sub">V5.1 全域AI智能体 · 一人运营公司</div>
     <label>账号</label><input id="u" value="admin" autocomplete="username">
     <label>密码</label><input id="p" type="password" value="admin123" autocomplete="current-password">
-    <div style="margin-top:16px"><button class="btn" style="width:100%" onclick="doLogin()">登 录</button></div>
+    <button class="btn mt16" style="width:100%;justify-content:center" onclick="doLogin()">登 录</button>
     <div class="hint" id="loginMsg"></div>
   </div>
 </div>
 
-<div id="app">
-  <div class="topbar">
-    <div class="brand">中芳堂 · 运营后台<small id="who"></small></div>
-    <div class="user"><span id="conn" class="pill">连接中…</span><span id="me"></span><button class="btn ghost sm" onclick="logout()">退出</button></div>
-  </div>
-  <div class="wrap">
-    <div class="tabs">
-      <div class="tab on" data-t="content" onclick="switchTab('content')">内容生成</div>
-      <div class="tab" data-t="leads" onclick="switchTab('leads')">截流线索</div>
-      <div class="tab" data-t="cust" onclick="switchTab('cust')">客户CRM</div>
-      <div class="tab" data-t="status" onclick="switchTab('status')">系统状态</div>
+<!-- 主框架 -->
+<div id="app" class="layout" style="display:none">
+  <aside class="sidebar">
+    <div class="brand">
+      <h2>🌿 <span>中芳堂</span></h2>
+      <small>AI Intelligence V5.1</small>
     </div>
+    <div class="nav-group">
+      <div class="title">核心运营</div>
+      <a class="on" data-page="dashboard" onclick="switchPage('dashboard')"><span class="ico">📊</span><span>运营仪表盘</span></a>
+      <a data-page="content" onclick="switchPage('content')"><span class="ico">✍️</span><span>内容生产</span></a>
+      <a data-page="publish" onclick="switchPage('publish')"><span class="ico">📡</span><span>发布管理</span></a>
+      <a data-page="leads" onclick="switchPage('leads')"><span class="ico">🎯</span><span>截流线索</span></a>
+      <a data-page="crm" onclick="switchPage('crm')"><span class="ico">👥</span><span>客户CRM</span></a>
+    </div>
+    <div class="nav-group">
+      <div class="title">增长引擎</div>
+      <a data-page="video" onclick="switchPage('video')"><span class="ico">🎬</span><span>视频工厂</span></a>
+      <a data-page="digitalhuman" onclick="switchPage('digitalhuman')"><span class="ico">🎙️</span><span>AI数字人直播</span><span class="badge-nav">AI智享</span></a>
+      <a data-page="geo" onclick="switchPage('geo')"><span class="ico">🔍</span><span>GEO搜索占位</span><span class="badge-nav">SEO</span></a>
+      <a data-page="distribution" onclick="switchPage('distribution')"><span class="ico">🔗</span><span>分销裂变</span></a>
+      <a data-page="finance" onclick="switchPage('finance')"><span class="ico">💳</span><span>金融服务</span></a>
+    </div>
+    <div class="nav-group">
+      <div class="title">产品资产</div>
+      <a data-page="products" onclick="switchPage('products')"><span class="ico">📦</span><span>产品与项目</span></a>
+      <a data-page="knowledge" onclick="switchPage('knowledge')"><span class="ico">📚</span><span>知识库</span></a>
+    </div>
+    <div class="nav-group">
+      <div class="title">前沿科技</div>
+      <a data-page="metaverse" onclick="switchPage('metaverse')"><span class="ico">🌐</span><span>元宇宙展厅</span><span class="badge-nav">3D</span></a>
+      <a data-page="web3" onclick="switchPage('web3')"><span class="ico">⛓️</span><span>Web3存证</span></a>
+    </div>
+    <div class="nav-group">
+      <div class="title">智能体</div>
+      <a data-page="agents" onclick="switchPage('agents')"><span class="ico">🤖</span><span>AI智能体</span><span class="badge-nav">10</span></a>
+      <a data-page="reports" onclick="switchPage('reports')"><span class="ico">📈</span><span>数据报表</span></a>
+    </div>
+    <div class="nav-group">
+      <div class="title">系统</div>
+      <a data-page="settings" onclick="switchPage('settings')"><span class="ico">⚙️</span><span>系统设置</span></a>
+    </div>
+  </aside>
 
-    <!-- 内容生成 -->
-    <div id="tab-content">
-      <div class="card">
-        <b style="color:var(--gold2)">AI 内容生成</b>
-        <div class="grid3" style="margin-top:8px">
-          <div><label>平台</label><select id="c_platform">
-            <option value="xiaohongshu">小红书</option><option value="douyin">抖音</option>
-            <option value="weixin">公众号</option><option value="kuaishou">快手</option>
-            <option value="bilibili">B站</option><option value="baijiahao">百家号</option>
-          </select></div>
-          <div><label>体质（九体辨识）</label><select id="c_const">
-            <option>平和质</option><option>气虚质</option><option>阳虚质</option><option>阴虚质</option>
-            <option>痰湿质</option><option>湿热质</option><option>血瘀质</option><option>气郁质</option><option>特禀质</option>
-          </select></div>
-          <div><label>类型</label><select id="c_type">
-            <option value="article">图文/文章</option><option value="video">短视频</option>
-            <option value="image_text">图文帖</option><option value="poster">海报文案</option>
-          </select></div>
-        </div>
-        <label>主题 / 选题</label><input id="c_topic" value="九体辨识精油居家调理">
-        <div style="margin-top:12px"><button class="btn" onclick="genContent()">⚡ 生成并保存</button>
-          <span class="hint" id="genMode"></span></div>
-      </div>
-      <div class="card" id="genResult" style="display:none">
-        <b id="gr_title" style="color:var(--gold2)"></b>
-        <pre id="gr_body"></pre>
-        <div id="gr_extra" class="hint"></div>
-      </div>
-      <div class="card">
-        <b style="color:var(--gold2)">内容库</b><span class="hint" id="c_count"></span>
-        <div id="contentList"></div>
+  <div class="main">
+    <div class="topbar">
+      <h1 id="pageTitle">运营仪表盘</h1>
+      <div class="user">
+        <span id="conn" class="pill">连接中…</span>
+        <span id="me" style="color:var(--gold)"></span>
+        <button class="btn ghost sm" onclick="logout()">退出</button>
       </div>
     </div>
-
-    <!-- 截流线索 -->
-    <div id="tab-leads" style="display:none">
-      <div class="card">
-        <b style="color:var(--gold2)">捕获线索</b>
-        <div class="grid3" style="margin-top:8px">
-          <div><label>平台</label><select id="l_platform"><option value="douyin">抖音</option><option value="xiaohongshu">小红书</option><option value="weixin">视频号</option><option value="kuaishou">快手</option><option value="bilibili">B站</option><option value="baidu">百度</option></select></div>
-          <div><label>作者</label><input id="l_author" placeholder="昵称"></div>
-          <div><label>地区</label><input id="l_loc" placeholder="如 宜昌伍家岗"></div>
-        </div>
-        <label>内容（评论/私信/提问原文）</label><textarea id="l_content" rows="2" placeholder="例如：宜昌有没有靠谱的精油推拿？我气虚总累"></textarea>
-        <div class="grid3" style="margin-top:8px">
-          <div><label>来源</label><select id="l_source"><option value="comment">评论</option><option value="question">提问</option><option value="dm">私信</option><option value="post">帖子</option></select></div>
-          <div><label>意向分(0-100)</label><input id="l_score" type="number" value="60"></div>
-          <div><label>匹配关键词(逗号分隔)</label><input id="l_kw" placeholder="精油,推拿"></div>
-        </div>
-        <div style="margin-top:12px"><button class="btn blue" onclick="addLead()">＋ 捕获线索入库</button></div>
-      </div>
-      <div class="card"><b style="color:var(--gold2)">线索池</b><span class="hint" id="l_count"></span><div id="leadList"></div></div>
-    </div>
-
-    <!-- 客户CRM -->
-    <div id="tab-cust" style="display:none">
-      <div class="card">
-        <b style="color:var(--gold2)">新建客户档案</b>
-        <div class="grid3" style="margin-top:8px">
-          <div><label>昵称 *</label><input id="cu_name" placeholder="如 小宜昌"></div>
-          <div><label>电话</label><input id="cu_phone" placeholder="选填"></div>
-          <div><label>等级</label><select id="cu_tier"><option value="C">C 普通</option><option value="B">B 潜力</option><option value="A">A 高价值</option><option value="D">D 沉默</option></select></div>
-        </div>
-        <div class="grid3" style="margin-top:8px">
-          <div><label>性别</label><select id="cu_gender"><option value="unknown">未知</option><option value="female">女</option><option value="male">男</option></select></div>
-          <div><label>体质</label><select id="cu_const"><option value="">不限</option><option>平和质</option><option>气虚质</option><option>阳虚质</option><option>阴虚质</option><option>痰湿质</option><option>湿热质</option><option>血瘀质</option><option>气郁质</option><option>特禀质</option></select></div>
-          <div><label>诉求(逗号分隔)</label><input id="cu_con" placeholder="睡眠,祛湿"></div>
-        </div>
-        <label>备注</label><input id="cu_note" placeholder="选填">
-        <div style="margin-top:12px"><button class="btn blue" onclick="addCustomer()">＋ 建档</button></div>
-      </div>
-      <div class="card"><b style="color:var(--gold2)">客户列表</b><span class="hint" id="cu_count"></span><div id="custList"></div></div>
-    </div>
-
-    <!-- 系统状态 -->
-    <div id="tab-status" style="display:none">
-      <div class="card"><b style="color:var(--gold2)">引擎状态</b><div id="engineStatus" class="grid2" style="margin-top:10px"></div></div>
-      <div class="card"><b style="color:var(--gold2)">真实数据计数</b><div id="counts" class="grid3" style="margin-top:10px"></div>
-        <div class="hint" id="aiMode" style="margin-top:10px"></div></div>
+    <div class="content" id="pageContent">
+      <div class="loading"><div class="spinner"></div><p style="margin-top:12px">加载中…</p></div>
     </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<script>
-const API_BASE = '';   // 部署时由构建脚本注入后端公网地址
+<script type="module">
+import * as API from './js/api.js';
+
 let TOKEN = localStorage.getItem('zft_token') || '';
 let ME = localStorage.getItem('zft_me') || '';
+let currentPage = 'dashboard';
 
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
 function esc(s){return (s==null?'':String(s)).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
 
-async function api(path, opts={}){
-  const headers={'Content-Type':'application/json'};
-  if(TOKEN) headers['Authorization']='Bearer '+TOKEN;
-  const r=await fetch(API_BASE+path,{...opts,headers});
-  if(r.status===401){logout();throw new Error('登录已失效');}
-  const j=await r.json().catch(()=>({success:false,message:'响应解析失败'}));
-  return {ok:r.ok, status:r.status, j};
-}
-
-async function doLogin(){
+window.doLogin = async function(){
   const u=document.getElementById('u').value, p=document.getElementById('p').value;
-  const {ok,j}=await api('/api/v1/auth/login',{method:'POST',body:JSON.stringify({username:u,password:p})});
-  if(ok&&j.success){TOKEN=j.data.token;ME=j.data.role||u;localStorage.setItem('zft_token',TOKEN);localStorage.setItem('zft_me',ME);enter();toast('登录成功');}
-  else{document.getElementById('loginMsg').innerHTML='<span class="err">账号或密码错误</span>';}
-}
+  try{const r=await API.login(u,p);ME=r.data.role||u;localStorage.setItem('zft_me',ME);enter();}
+  catch(e){document.getElementById('loginMsg').innerHTML='<span class="err">'+esc(e.message)+'</span>';}
+};
 
-function logout(){TOKEN='';ME='';localStorage.removeItem('zft_token');localStorage.removeItem('zft_me');location.reload();}
+window.logout = function(){TOKEN='';ME='';localStorage.clear();location.reload();};
 
 function enter(){
   document.getElementById('login').style.display='none';
-  document.getElementById('app').style.display='block';
+  document.getElementById('app').style.display='flex';
   document.getElementById('me').textContent=ME;
-  document.getElementById('who').textContent=' · '+ME;
-  checkConn(); loadStatus();
+  checkConn();
+  switchPage('dashboard');
 }
 
 async function checkConn(){
-  try{const {ok}=await api('/api/v1/system/status');const el=document.getElementById('conn');
-    if(ok){el.textContent='● 后端在线';el.className='pill ok';}else{el.textContent='○ 后端离线';el.className='pill err';}}
-  catch(e){document.getElementById('conn').textContent='○ 后端离线';document.getElementById('conn').className='pill err';}
+  try{const {ok}=await API.system.health();const el=document.getElementById('conn');
+    if(ok){el.textContent='● 在线';el.className='pill ok';}else{el.textContent='○ 离线';el.className='pill err';}}
+  catch(e){document.getElementById('conn').textContent='○ 离线';document.getElementById('conn').className='pill err';}
 }
 
-function switchTab(t){
-  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.t===t));
-  ['content','leads','cust','status'].forEach(x=>document.getElementById('tab-'+x).style.display=(x===t?'block':'none'));
-  if(t==='content')loadContent(); if(t==='leads')loadLeads(); if(t==='cust')loadCustomers(); if(t==='status')loadStatus();
-}
+const PAGE_TITLES = {
+  dashboard:'📊 运营仪表盘',content:'✍️ 内容生产',publish:'📡 发布管理',leads:'🎯 截流线索',
+  crm:'👥 客户CRM',video:'🎬 视频工厂',digitalhuman:'🎙️ AI数字人直播',geo:'🔍 GEO搜索占位',
+  distribution:'🔗 分销裂变',finance:'💳 金融服务',products:'📦 产品与项目',knowledge:'📚 知识库',
+  metaverse:'🌐 元宇宙展厅',web3:'⛓️ Web3存证',
+  agents:'🤖 AI智能体',reports:'📈 数据报表',settings:'⚙️ 系统设置'
+};
 
-async function genContent(){
-  const body={platform:document.getElementById('c_platform').value,constitution:document.getElementById('c_const').value,topic:document.getElementById('c_topic').value,type:document.getElementById('c_type').value};
-  const btn=event.target; btn.disabled=true; btn.textContent='生成中…';
-  const {ok,j}=await api('/api/v1/console/content/generate',{method:'POST',body:JSON.stringify(body)});
-  btn.disabled=false; btn.textContent='⚡ 生成并保存';
-  if(ok&&j.success){toast(j.message);document.getElementById('genMode').textContent=j.data.aiGenerated?'（AI 大模型生成）':'（知识库组合生成）';
-    document.getElementById('genResult').style.display='block';
-    document.getElementById('gr_title').textContent=j.data.title;
-    document.getElementById('gr_body').textContent=j.data.body;
-    const kp=(j.data.metadata&&j.data.metadata.keyPoints)||[];
-    document.getElementById('gr_extra').innerHTML='标签：'+(j.data.hashtags||[]).map(h=>'#'+h).join(' ')+(kp.length?'<br>要点：<br>'+kp.map((k,i)=>(i+1)+'. '+k).join('<br>'):'');
-    loadContent();
-  } else toast('生成失败：'+(j.message||'未知错误'));
-}
+window.switchPage = async function(page){
+  currentPage = page;
+  document.querySelectorAll('.nav-group a').forEach(x=>x.classList.toggle('on',x.dataset.page===page));
+  document.getElementById('pageTitle').textContent = PAGE_TITLES[page] || page;
+  const el = document.getElementById('pageContent');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div><p style="margin-top:12px">加载中…</p></div>';
+  try{
+    const mod = await import(`./pages/${page}.js`);
+    await mod.render(el);
+  }catch(err){
+    el.innerHTML = `<div class="card"><h3>页面加载失败</h3><pre>${esc(err.message)}</pre><button class="btn mt12" onclick="switchPage('dashboard')">返回首页</button></div>`;
+  }
+};
 
-async function loadContent(){
-  const {ok,j}=await api('/api/v1/console/content');
-  if(!(ok&&j.success))return;
-  document.getElementById('c_count').textContent='共 '+j.data.length+' 条';
-  document.getElementById('contentList').innerHTML=j.data.map(c=>`
-    <div class="row">
-      <div class="grow">
-        <div class="ell"><b>${esc(c.title)}</b></div>
-        <div class="meta">${esc(c.platform)} · <span class="badge b-${esc(c.status)}">${esc(c.status)}</span> · ${c.aiGenerated?'AI':'知识库'} · ${new Date(c.createdAt).toLocaleString('zh-CN')}</div>
-      </div>
-      <button class="btn sm" onclick="publish('${c._id}')">发布队列</button>
-    </div>`).join('')||'<div class="hint">暂无内容，先生成一条</div>';
-}
-async function publish(id){
-  const {ok,j}=await api('/api/v1/console/content/'+id+'/publish',{method:'POST',body:'{}'});
-  toast(ok&&j.success?j.message:'发布失败'); if(ok)loadContent();
-}
-
-async function addLead(){
-  const body={platform:document.getElementById('l_platform').value,authorName:document.getElementById('l_author').value,content:document.getElementById('l_content').value,location:document.getElementById('l_loc').value,source:document.getElementById('l_source').value,intentScore:document.getElementById('l_score').value,matchedKeywords:document.getElementById('l_kw').value.split(',').map(s=>s.trim()).filter(Boolean)};
-  if(!body.content){toast('请填写线索内容');return;}
-  const {ok,j}=await api('/api/v1/console/leads',{method:'POST',body:JSON.stringify(body)});
-  toast(ok&&j.success?j.message:'失败'); if(ok){document.getElementById('l_content').value='';loadLeads();}
-}
-async function loadLeads(){
-  const {ok,j}=await api('/api/v1/console/leads'); if(!(ok&&j.success))return;
-  document.getElementById('l_count').textContent='共 '+j.data.length+' 条';
-  document.getElementById('leadList').innerHTML=j.data.map(l=>`
-    <div class="row">
-      <div class="grow"><div class="ell"><b>${esc(l.authorName||'匿名')}</b> <span class="meta">· ${esc(l.platform)} · 意向${l.intentScore}</span></div>
-      <div class="meta ell">${esc(l.content)}</div></div>
-      <span class="badge ${l.isHighPotential?'b-high':'b-'+esc(l.status)}">${l.isHighPotential?'高潜':esc(l.status)}</span>
-      <button class="btn sm ghost" onclick="setLead('${l._id}','contacted')">联系</button>
-      <button class="btn sm" onclick="setLead('${l._id}','converted')">转化</button>
-    </div>`).join('')||'<div class="hint">暂无线索</div>';
-}
-async function setLead(id,s){const {ok,j}=await api('/api/v1/console/leads/'+id+'/status',{method:'PUT',body:JSON.stringify({status:s})});if(ok)loadLeads();}
-
-async function addCustomer(){
-  const body={nickname:document.getElementById('cu_name').value,phone:document.getElementById('cu_phone').value,gender:document.getElementById('cu_gender').value,tier:document.getElementById('cu_tier').value,constitution:document.getElementById('cu_const').value,concerns:document.getElementById('cu_con').value.split(',').map(s=>s.trim()).filter(Boolean),notes:document.getElementById('cu_note').value};
-  if(!body.nickname){toast('请填写昵称');return;}
-  const {ok,j}=await api('/api/v1/console/customers',{method:'POST',body:JSON.stringify(body)});
-  toast(ok&&j.success?j.message:'失败'); if(ok){document.getElementById('cu_name').value='';loadCustomers();}
-}
-async function loadCustomers(){
-  const {ok,j}=await api('/api/v1/console/customers'); if(!(ok&&j.success))return;
-  document.getElementById('cu_count').textContent='共 '+j.data.length+' 条';
-  document.getElementById('custList').innerHTML=j.data.map(c=>`
-    <div class="row"><div class="grow"><div class="ell"><b>${esc(c.nickname)}</b> <span class="meta">· ${esc(c.phone||'无电话')} · ${esc(c.tier)}级${c.constitution?' · '+esc(c.constitution):''}</span></div>
-    <div class="meta">${esc((c.concerns||[]).join('/'))}</div></div>
-    <span class="badge b-${esc(c.status)}">${esc(c.status)}</span></div>`).join('')||'<div class="hint">暂无客户</div>';
-}
-
-async function loadStatus(){
-  const {ok,j}=await api('/api/v1/console/status'); if(!(ok&&j.success))return;
-  const e=j.data.engines;
-  document.getElementById('engineStatus').innerHTML=Object.entries(e).map(([k,v])=>`<div class="stat"><span class="meta">${esc(k)}</span><b class="${v==='running'?'ok':''}">${v==='running'?'● 运行中':(v==='placeholder'?'○ 占位(概念)':'—')}</b></div>`).join('');
-  const c=j.data.counts;
-  document.getElementById('counts').innerHTML=[['内容',c.content],['线索',c.leads],['客户',c.customers],['发布记录',c.publishes]].map(([k,v])=>`<div class="stat"><b>${v}</b><span class="meta">${k}</span></div>`).join('');
-  document.getElementById('aiMode').textContent='AI 内容模式：'+(j.data.aiMode==='llm'?'真实大模型（已配置密钥）':'知识库组合（未配置 AI 密钥，仍产出可用真草稿）');
-}
-
-// 启动：若已有 token 尝试直接进入
 if(TOKEN){enter();} else {document.getElementById('login').style.display='flex';}
 </script>
 </body>

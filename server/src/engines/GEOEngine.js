@@ -20,8 +20,8 @@
  * @since 2026-07
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 // ============================================================
 // 常量定义
@@ -2225,7 +2225,5 @@ class GEOEngine {
   }
 }
 
-module.exports = GEOEngine;
-module.exports.SUPPORTED_PLATFORMS = SUPPORTED_PLATFORMS;
-module.exports.MATRIX_LEVELS = MATRIX_LEVELS;
-module.exports.INTENT_TYPES = INTENT_TYPES;
+export default GEOEngine;
+export { SUPPORTED_PLATFORMS, MATRIX_LEVELS, INTENT_TYPES };

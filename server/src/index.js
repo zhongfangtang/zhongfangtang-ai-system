@@ -18,15 +18,52 @@ import logger from './utils/logger.js';
 import { connectDatabase } from './services/DatabaseService.js';
 import routes from './api/routes.js';
 import staticRoutes from './api/staticRoutes.js';
+import agentRoutes from './api/agentRoutes.js';
+import videoRoutes from './api/videoRoutes.js';
 import { startScheduledTasks } from './engines/scheduler.js';
+import orchestrator from './agents/orchestrator.js';
+import TizhiAgent from './agents/TizhiAgent.js';
+import ContentAgent from './agents/ContentAgent.js';
+import InterceptionAgent from './agents/InterceptionAgent.js';
+import PrivateDomainAgent from './agents/PrivateDomainAgent.js';
+import AnalyticsAgent from './agents/AnalyticsAgent.js';
+import VideoAgent from './agents/VideoAgent.js';
+import GeoAgent from './agents/GeoAgent.js';
+import ErpAgent from './agents/ErpAgent.js';
+import DistributionAgent from './agents/DistributionAgent.js';
+import DigitalHumanAgent from './agents/DigitalHumanAgent.js';
+import MonitorService from './services/MonitorService.js';
+import { getConfiguredIntegrations } from './services/IntegrationManifest.js';
 
 const app = express();
+const monitor = new MonitorService();
 const server = createServer(app);
 
 // ==================== 中间件 ====================
 
-/** 安全头 */
-app.use(helmet());
+/** 安全头
+ * 注意：静态页面（运营后台/看板/门户）使用内联脚本和样式，
+ * 因此放宽 CSP 允许 'unsafe-inline'。API 端点的安全由认证和输入校验保证。
+ */
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      scriptSrcAttr: ["'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https:"],
+      imgSrc: ["'self'", "data:", "https:"],
+      fontSrc: ["'self'", "https:", "data:"],
+      connectSrc: ["'self'", "https:", "wss:"],
+      frameAncestors: ["'self'", "*"],
+      formAction: ["'self'"],
+      baseUri: ["'self'"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
+    },
+  },
+  crossOriginEmbedderPolicy: false,
+}));
 
 /** CORS 跨域 */
 // 生产环境允许的来源由 CORS_ORIGINS 配置（逗号分隔），至少包含 BI 看板域名与自有域名；
@@ -53,21 +90,46 @@ app.use(express.json({ limit: '10mb' }));
 /** URL 编码请求体解析 */
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// ==================== 静态文件（同源自托管：运营后台JS/CSS等资源） ====================
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const CONSOLE_ROOT = path.resolve(__dirname, '..', '..', 'console');
+app.use('/js', express.static(path.join(CONSOLE_ROOT, 'js'), { maxAge: '1h' }));
+app.use('/pages', express.static(path.join(CONSOLE_ROOT, 'pages'), { maxAge: '1h' }));
+
 // ==================== 静态页面（同源自托管：运营后台/看板/门户） ====================
 app.use('/', staticRoutes);
+
+// ==================== AI智能体管理API ====================
+app.use('/api/v1/agents', agentRoutes);
+
+// ==================== 视频工厂API ====================
+app.use('/api/v1/video', videoRoutes);
 
 // ==================== 健康检查 ====================
 
 app.get('/health', (req, res) => {
+  monitor.healthCheck().then(h => res.json(h));
+});
+
+/**
+ * GET /api/v1/system/metrics - 系统资源指标
+ */
+app.get('/api/v1/system/metrics', (req, res) => {
   res.json({
     success: true,
-    data: {
-      status: 'running',
-      uptime: process.uptime(),
-      timestamp: new Date().toISOString(),
-      version: '1.0.0',
-    },
-    message: '服务运行正常',
+    data: monitor.getSystemMetrics(),
+  });
+});
+
+/**
+ * GET /api/v1/system/integrations - 外部接口配置状态
+ */
+app.get('/api/v1/system/integrations', (req, res) => {
+  res.json({
+    success: true,
+    data: getConfiguredIntegrations(),
   });
 });
 
@@ -181,6 +243,33 @@ async function start() {
     /** 连接数据库 */
     await connectDatabase();
     logger.info('数据库连接成功', { module: 'startup' });
+
+    /** 初始化AI智能体编排器 */
+    if (config.agents.enabled) {
+      const agents = [
+        new TizhiAgent(),
+        new ContentAgent(),
+        new InterceptionAgent(),
+        new PrivateDomainAgent(),
+        new AnalyticsAgent(),
+        new VideoAgent(),
+        new GeoAgent(),
+        new ErpAgent(),
+        new DistributionAgent(),
+        new DigitalHumanAgent(),
+      ];
+      await orchestrator.initialize(agents);
+
+      /** 注册工作流 */
+      orchestrator.registerWorkflow('content-to-publish', {
+        steps: [
+          { agentId: 'content-agent', name: '内容生成' },
+          { agentId: 'geo-agent', name: 'GEO优化' },
+          { agentId: 'video-agent', name: '视频生产' },
+        ],
+      });
+      logger.info('AI智能体编排器启动完成', { module: 'startup', agentCount: agents.length });
+    }
 
     /** 启动定时任务 */
     startScheduledTasks();

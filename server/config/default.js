@@ -262,6 +262,159 @@ const config = {
     /** 沉默客户激活检查 (每周一上午10点) */
     reactivation: '0 10 * * 1',
   },
+
+  /** AI智能体配置 */
+  agents: {
+    /** 是否启用AI智能体编排 */
+    enabled: true,
+    /** 体质辨证师配置 */
+    tizhi: {
+      enabled: true,
+      model: process.env.AGENT_TIZHI_MODEL || 'deepseek-chat',
+    },
+    /** 内容总监配置 */
+    content: {
+      enabled: true,
+      /** 每日生成内容计划 */
+      dailyPlan: {
+        douyin: 3,
+        xiaohongshu: 2,
+        weixin: 1,
+        kuaishou: 1,
+        bilibili: 1,
+        baijiahao: 1,
+      },
+      cron: '0 7 * * *',
+    },
+    /** 截流获客官配置 */
+    interception: {
+      enabled: true,
+      cron: '*/15 * * * *',
+      /** 监控同行账号列表（宜昌/全国中医芳疗/美容/美体/养生） */
+      competitors: [
+        '宜昌美容', '宜昌养生', '宜昌推拿', '中医芳疗', '精油按摩',
+        '宜昌SPA', '湖北美容', '中医美容', '美体塑形', '养生馆',
+      ],
+    },
+    /** 私域管家配置 */
+    followup: {
+      enabled: true,
+      cron: '0 */4 * * *',
+    },
+    /** BI分析师配置 */
+    analytics: {
+      enabled: true,
+      cron: '0 6 * * *',
+    },
+    /** 视频工厂配置 */
+    video: {
+      enabled: true,
+      cron: '0 8 * * *',
+    },
+    /** 搜索占位官配置 */
+    geo: {
+      enabled: true,
+      cron: '0 6 * * *',
+    },
+    /** ERP管家配置 */
+    erp: {
+      enabled: true,
+      cron: '0 3 * * *',
+    },
+    /** 分销管家配置 */
+    distribution: {
+      enabled: true,
+      cron: '0 1 * * *',
+    },
+  },
+
+  /** 分销链动2+1配置 */
+  distribution: {
+    enabled: true,
+    /** 佣金比例配置 */
+    commissionRates: {
+      level1: 0.15,   // 直推佣金比例
+      level2: 0.05,   // 间推佣金比例
+    },
+    /** 链动规则：每个分销员最多拿2级佣金 */
+    maxLevels: 2,
+    /** 出局规则：推荐满2人后，第3人开始上级出局 */
+    exitRule: {
+      directRequired: 2,   // 直推满2人
+      placeTo: 'grandparent', // 第3人及以后放爷爷节点下面
+    },
+    /** 最低提现金额 */
+    minWithdraw: 100,
+  },
+
+  /** 积分系统配置 */
+  points: {
+    enabled: true,
+    /** 消费积分比例：每消费1元得1积分 */
+    earnRate: 1,
+    /** 积分兑换比例：100积分=1元 */
+    redeemRate: 100,
+    /** 美业币与积分关系：10积分=1美业币 */
+    beautycoinRate: 10,
+    /** 签到积分 */
+    signInPoints: 5,
+    /** 推荐新客户积分 */
+    referralPoints: 50,
+    /** 积分有效期(天) */
+    expireDays: 365,
+  },
+
+  /** 金融创新配置 */
+  finance: {
+    enabled: true,
+    /** 分期付款默认配置 */
+    installment: {
+      enabled: true,
+      periods: [3, 6, 12],   // 可选期数
+      rate: 0.008,           // 月费率
+    },
+    /** 先享后付配置 */
+    bnpl: {
+      enabled: true,
+      graceDays: 30,         // 免息天数
+      penaltyRate: 0.0005,   // 逾期日罚息
+    },
+    /** 异业联盟配置 */
+    alliance: {
+      enabled: true,
+      partners: ['insurance', 'mobile', 'travel'],
+    },
+  },
+
+  /** 视频处理配置 */
+  video: {
+    enabled: true,
+    /** FFmpeg路径 */
+    ffmpegPath: process.env.FFMPEG_PATH || 'ffmpeg',
+    /** 默认视频模板 */
+    templates: {
+      xiaohongshu: { duration: 60, ratio: '3:4', music: '舒缓' },
+      douyin: { duration: 30, ratio: '9:16', music: '动感' },
+      bilibili: { duration: 180, ratio: '16:9', music: '知识' },
+    },
+    /** TTS配音语言 */
+    ttsLang: 'zh-CN',
+  },
+
+  /** 预测分析配置 */
+  prediction: {
+    enabled: true,
+    /** 流失预测阈值 */
+    churn: {
+      silenceDays: 60,        // 超过60天未活跃判定为流失风险
+      minInteractions: 3,     // 最少互动次数
+    },
+    /** 销售预测 */
+    sales: {
+      historyDays: 90,        // 历史数据天数
+      forecastDays: 30,       // 预测天数
+    },
+  },
 };
 
 export default config;

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中芳堂全域AI智能体系统 · 预览门户（单文件·离线）</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;background:#0f0f1a;color:#e0e0f0;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+  header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(212,168,83,0.18);flex-shrink:0}
+  header .t{color:#d4a853;font-size:1.05em;font-weight:700}
+  header .s{color:#8a8aa0;font-size:.78em}
+  .tabs{display:flex;gap:8px;flex-shrink:0}
+  .tab{padding:8px 16px;border-radius:8px;border:1px solid rgba(212,168,83,0.3);background:transparent;color:#d4a853;font-size:.86em;font-weight:600;cursor:pointer;transition:all .15s}
+  .tab:hover{background:rgba(212,168,83,0.1)}
+  .tab.active{background:#d4a853;color:#0f0f1a}
+  .open-link{color:#5B7FBD;font-size:.78em;text-decoration:none;margin-left:10px}
+  .open-link:hover{text-decoration:underline}
+  main{flex:1;position:relative;min-height:0}
+  iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}
+  .hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(15,15,26,0.85);border:1px solid rgba(212,168,83,0.25);color:#8a8aa0;font-size:.72em;padding:6px 14px;border-radius:20px;pointer-events:none}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="t">🏺 中芳堂全域AI智能体系统 · 预览门户</div>
+    <div class="s">单文件离线版 · 无需服务器 · 双击本文件即可查看三大模块</div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" data-src="index.html">① 系统入口</button>
+    <button class="tab" data-src="brand/index.html">② Web3品牌馆</button>
+    <button class="tab" data-src="dashboard/index.html">③ BI中台</button>
+    <a class="open-link" id="openCur" href="index.html" target="_blank" title="若浏览器禁止本地框架，点此在新窗口打开当前模块（已本地化，离线可用）">↗ 新窗口打开当前模块</a>
+  </div>
+</header>
+
+<main>
+  <iframe id="frame" src="index.html" title="中芳堂系统预览"></iframe>
+  <div class="hint">当前：① 系统入口 — 切换上方标签查看其他模块</div>
+</main>
+
+<script>
+  var frame = document.getElementById('frame');
+  var hint = document.querySelector('.hint');
+  var openCur = document.getElementById('openCur');
+  var tabs = document.querySelectorAll('.tab');
+  var labels = {'index.html':'① 系统入口','brand/index.html':'② Web3品牌馆','dashboard/index.html':'③ BI中台'};
+  function activate(src){
+    frame.src = src;
+    if(openCur) openCur.href = src;
+    tabs.forEach(function(b){ b.classList.remove('active'); });
+    hint.textContent = '当前：' + (labels[src]||src) + ' — 切换上方标签查看其他模块';
+  }
+  tabs.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      activate(btn.getAttribute('data-src'));
+    });
+  });
+</script>
+
+</body>
+</html>
