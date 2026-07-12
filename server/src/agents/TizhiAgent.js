@@ -12,6 +12,7 @@
 import AgentBase from './base/AgentBase.js';
 import config from '../../config/default.js';
 import { createModuleLogger } from '../utils/logger.js';
+import { parseModelJSON } from '../utils/safeJson.js';
 
 const logger = createModuleLogger('TizhiAgent');
 
@@ -192,7 +193,17 @@ export default class TizhiAgent extends AgentBase {
 用户症状/诉求：${symptoms.join('、') || message}
 ${gender ? `性别：${gender}` : ''}${age ? ` 年龄：${age}` : ''}
 
-请输出JSON：{"constitution":"体质类型","confidence":0.9,"desc":"体质描述","recommendation":{"oils":["精油1","精油2"],"oilEffect":"功效","plan":"调理方案","diet":"食疗建议"}}`;
+严格要求：只输出一个 JSON 对象，不要任何解释文字、不要 markdown 代码块。
+字段说明：
+- constitution：九体之一（平和质/气虚质/阳虚质/阴虚质/痰湿质/湿热质/血瘀质/气郁质/特禀质）
+- confidence：0~1 的数字
+- desc：一句话体质描述
+- recommendation.oils：必须是「字符串数组」，例如 ["黄芪精油","人参精油"]，禁止写成对象
+- recommendation.oilEffect：精油功效一句话
+- recommendation.plan：居家+到店调理方案
+- recommendation.diet：食疗建议
+
+示例：{"constitution":"气虚质","confidence":0.9,"desc":"容易疲乏气短","recommendation":{"oils":["黄芪精油","人参精油"],"oilEffect":"补气固表","plan":"居家推拿+到店艾灸","diet":"多吃山药红枣"}}`;
   }
 
   /**
@@ -207,16 +218,22 @@ ${gender ? `性别：${gender}` : ''}${age ? ` 年龄：${age}` : ''}
         {
           model: this.model,
           messages: [{ role: 'user', content: prompt }],
-          temperature: 0.6,
+          temperature: 0.3,
           max_tokens: 600,
           response_format: { type: 'json_object' },
         },
         { timeout: 30000, headers: { Authorization: `Bearer ${config.ai.apiKey}` } }
       );
       const content = r.data?.choices?.[0]?.message?.content || '';
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
+      const parsed = parseModelJSON(content);
+      if (parsed && parsed.constitution) {
+        // 归一化：oils 可能是对象数组 [{name}] 或字符串数组
+        if (Array.isArray(parsed.recommendation?.oils)) {
+          parsed.recommendation.oils = parsed.recommendation.oils.map((o) =>
+            typeof o === 'string' ? o : (o?.name || o?.oil || String(o))
+          );
+        }
+        return parsed;
       }
     } catch (err) {
       logger.warn('AI辨证调用失败，降级知识库', { error: err.message });

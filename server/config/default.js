@@ -270,7 +270,8 @@ const config = {
     /** 体质辨证师配置 */
     tizhi: {
       enabled: true,
-      model: process.env.AGENT_TIZHI_MODEL || 'deepseek-chat',
+      // 默认跟随全局文本模型（硅基流动 Qwen2.5-7B，免费可用），可用 env 覆盖
+      model: process.env.AGENT_TIZHI_MODEL || process.env.AI_MODEL_TEXT || 'Qwen/Qwen2.5-7B-Instruct',
     },
     /** 内容总监配置 */
     content: {

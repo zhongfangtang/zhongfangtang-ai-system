@@ -4,8 +4,10 @@ server/node_modules/
 
 # 环境变量（含密钥，禁止提交）
 server/.env
+server/.env.bak
 .env
 .env.local
+.env.*.bak
 
 # 日志与上传
 server/logs/

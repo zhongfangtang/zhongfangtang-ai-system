@@ -19,6 +19,7 @@ import axios from 'axios';
 import config from '../../config/default.js';
 import { createModuleLogger } from '../utils/logger.js';
 import complianceService from '../services/ComplianceService.js';
+import { parseModelJSON } from '../utils/safeJson.js';
 
 const logger = createModuleLogger('ContentGenerator');
 
@@ -396,16 +397,11 @@ export default class ContentGenerator {
    * @returns {Object} 解析后的对象
    */
   _parseAIResponse(content) {
-    try {
-      /** 尝试提取JSON部分 */
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
-      }
-    } catch {
-      logger.warn('AI返回内容JSON解析失败，使用文本原样');
+    const parsed = parseModelJSON(content);
+    if (parsed && (parsed.title || parsed.content)) {
+      return parsed;
     }
-
+    logger.warn('AI返回内容JSON解析失败，使用文本原样');
     return {
       title: '',
       content,

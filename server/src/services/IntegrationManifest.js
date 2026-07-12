@@ -16,7 +16,7 @@ export const INTEGRATION_MANIFEST = {
 
   // ==================== 平台发布 ====================
   platforms: {
-    douyin: { name: '抖音开放平台', url: 'https://open.douyin.com', authType: 'OAuth2', mode: 'semi-auto', envKey: 'DOUYIN_ACCESS_TOKEN' },
+    douyin: { name: '抖音来客(本地生活)', url: 'https://open.douyin.com', authType: 'OAuth2', mode: 'semi-auto', envKeys: ['DOUYIN_APP_ID', 'DOUYIN_APP_SECRET'] },
     xiaohongshu: { name: '小红书开放平台', url: 'https://open.xiaohongshu.com', authType: 'OAuth2', mode: 'semi-auto', envKey: 'XHS_ACCESS_TOKEN' },
     weixin: { name: '微信视频号', url: 'https://developers.weixin.qq.com', authType: 'OAuth2', mode: 'full-auto', envKey: 'WEIXIN_ACCESS_TOKEN' },
     kuaishou: { name: '快手开放平台', url: 'https://open.kuaishou.com', authType: 'OAuth2', mode: 'semi-auto', envKey: 'KUAISHOU_ACCESS_TOKEN' },
@@ -76,7 +76,12 @@ export function getConfiguredIntegrations() {
   for (const [category, items] of Object.entries(INTEGRATION_MANIFEST)) {
     for (const [key, item] of Object.entries(items)) {
       const allKeys = item.envKeys || [item.envKey].filter(Boolean);
-      const configuredCount = allKeys.filter(k => process.env[k]).length;
+      // 占位符 __REPLACE_ME__ / 空值 视为未配置，避免误报"已配置"
+      const isSet = (k) => {
+        const v = process.env[k];
+        return v && v !== '__REPLACE_ME__' && v.trim() !== '';
+      };
+      const configuredCount = allKeys.filter(isSet).length;
       const status = allKeys.length === 0 ? 'builtin' : configuredCount === allKeys.length ? 'configured' : configuredCount > 0 ? 'partial' : 'pending';
       configured.push({ category, key, name: item.name, status, cost: item.cost });
     }
