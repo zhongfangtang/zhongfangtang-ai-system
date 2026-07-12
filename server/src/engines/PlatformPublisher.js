@@ -14,6 +14,7 @@ import path from 'path';
 import config from '../../config/default.js';
 import { createModuleLogger } from '../utils/logger.js';
 import { PublishRecord } from '../services/DatabaseService.js';
+import wechatToken from '../services/WeChatTokenService.js';
 
 const logger = createModuleLogger('PlatformPublisher');
 
@@ -307,9 +308,16 @@ export default class PlatformPublisher {
     }
 
     try {
+      let url = `${apiBase}${ep.path}`;
+      // 公众号：access_token 走查询参数（微信规范，非 Bearer）
+      if (this.platform === 'weixin') {
+        const wxToken = await wechatToken.getAccessToken();
+        url += `?access_token=${wxToken}`;
+      }
+
       const response = await axios({
         method: ep.method,
-        url: `${apiBase}${ep.path}`,
+        url,
         data: payload,
         headers: authHeaders,
         timeout: 30000,
@@ -429,6 +437,9 @@ export default class PlatformPublisher {
         return { ...base, 'Cookie': `SESSDATA=${this.credentials.sessdata}` };
       case 'baijiahao':
         return { ...base, 'Cookie': config.platforms.baijiahao.cookie };
+      case 'weixin':
+        // 公众号 access_token 已通过查询参数传入，无需 Authorization 头
+        return base;
       default:
         return { ...base, 'Authorization': `Bearer ${this.credentials.token || ''}` };
     }

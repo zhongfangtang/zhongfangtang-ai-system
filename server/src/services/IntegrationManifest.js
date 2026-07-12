@@ -18,7 +18,7 @@ export const INTEGRATION_MANIFEST = {
   platforms: {
     douyin: { name: '抖音来客(本地生活)', url: 'https://open.douyin.com', authType: 'OAuth2', mode: 'semi-auto', envKeys: ['DOUYIN_APP_ID', 'DOUYIN_APP_SECRET'] },
     xiaohongshu: { name: '小红书开放平台', url: 'https://open.xiaohongshu.com', authType: 'OAuth2', mode: 'semi-auto', envKey: 'XHS_ACCESS_TOKEN' },
-    weixin: { name: '微信视频号', url: 'https://developers.weixin.qq.com', authType: 'OAuth2', mode: 'full-auto', envKey: 'WEIXIN_ACCESS_TOKEN' },
+    weixin: { name: '微信公众号(服务号)', url: 'https://mp.weixin.qq.com', authType: 'AppSecret', mode: 'full-auto', envKeys: ['WEIXIN_APP_ID', 'WEIXIN_APP_SECRET'] },
     kuaishou: { name: '快手开放平台', url: 'https://open.kuaishou.com', authType: 'OAuth2', mode: 'semi-auto', envKey: 'KUAISHOU_ACCESS_TOKEN' },
     bilibili: { name: 'B站创作中心', url: 'https://member.bilibili.com', authType: 'Cookie', mode: 'full-auto', envKey: 'BILIBILI_SESSDATA' },
     baijiahao: { name: '百家号', url: 'https://baijiahao.baidu.com', authType: 'Cookie', mode: 'full-auto', envKey: 'BAIJIAHAO_COOKIE' },
