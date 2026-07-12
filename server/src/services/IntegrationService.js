@@ -244,6 +244,37 @@ class IntegrationService {
     }
   }
 
+  /**
+   * 通过「群机器人 Webhook」给企微群发通知
+   * 优点：无需认证、无需 CorpID/Secret、不受 API 可信IP白名单(60020)限制，最适合一人公司。
+   * @param {object} opt
+   * @param {string} [opt.webhook] 群机器人 Webhook 完整地址（含 key）；不传则用配置 WEWORK_GROUP_WEBHOOK
+   * @param {string} opt.content 文本正文
+   */
+  async notifyWeworkGroup(opt = {}) {
+    const webhook = opt.webhook || config.wework.groupWebhook;
+    if (!webhook) {
+      return { success: false, reason: '未配置企微群机器人 Webhook（WEWORK_GROUP_WEBHOOK）' };
+    }
+    if (!opt.content) {
+      return { success: false, reason: '缺少内容(content)' };
+    }
+    try {
+      const resp = await axios.post(webhook, {
+        msgtype: 'text',
+        text: { content: opt.content },
+      }, { timeout: 10000 });
+      if (resp.data?.errcode !== 0) {
+        throw new Error(resp.data?.errmsg || `群机器人发送失败 errcode=${resp.data?.errcode}`);
+      }
+      logger.info('企微群机器人通知已发送');
+      return { success: true, msgtype: 'text' };
+    } catch (err) {
+      logger.error('企微群机器人通知失败', { error: err.message });
+      return { success: false, error: err.message };
+    }
+  }
+
   // ============ 腕家 H1 健康数据 ============
 
   /** 拉取指定客户的腕家H1健康数据，写入客户档案 */

@@ -157,6 +157,7 @@ const config = {
     token: process.env.WEWORK_TOKEN || '',
     aesKey: process.env.WEWORK_AES_KEY || '',
     callbackUrl: process.env.WEWORK_CALLBACK_URL || '',
+    groupWebhook: process.env.WEWORK_GROUP_WEBHOOK || '',
     apiBase: 'https://qyapi.weixin.qq.com/cgi-bin',
   },
 

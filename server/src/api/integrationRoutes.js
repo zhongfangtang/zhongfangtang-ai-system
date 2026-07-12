@@ -6,6 +6,7 @@
  *   POST /api/v1/integrations/:name/test       连通性测试
  *   POST /api/v1/integrations/sync/erp         从 ERP 全量/增量同步
  *   POST /api/v1/integrations/wanji-h1/:id     拉取腕家H1健康数据
+ *   POST /api/v1/integrations/wework/group-notify  群机器人Webhook通知（无需认证/白名单）
  *   POST /api/v1/integrations/wework/notify    给企业内部成员发通知（未认证可用）
  *   POST /api/v1/integrations/wework/:id       推送客户到企业微信（外部联系人，需认证）
  * 公开接口（Webhook，建议配合签名校验 + IP 白名单）：
@@ -56,6 +57,19 @@ router.post('/wanji-h1/:id', authenticate, async (req, res) => {
       return res.status(502).json({ success: false, data: result, message: result.reason || result.error });
     }
     res.json({ success: true, data: result, message: '腕家H1数据同步成功' });
+  } catch (err) {
+    res.status(500).json({ success: false, data: null, message: err.message });
+  }
+});
+
+/** 群机器人 Webhook 通知（无需认证/白名单，最适合未认证一人公司） */
+router.post('/wework/group-notify', authenticate, async (req, res) => {
+  try {
+    const result = await integrationService.notifyWeworkGroup(req.body || {});
+    if (!result.success) {
+      return res.status(502).json({ success: false, data: result, message: result.reason || result.error });
+    }
+    res.json({ success: true, data: result, message: '企微群通知已发送' });
   } catch (err) {
     res.status(500).json({ success: false, data: null, message: err.message });
   }
