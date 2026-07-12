@@ -19,8 +19,8 @@ services:
     runtime: node
     plan: free
     branch: main
-    buildCommand: npm install
-    startCommand: node src/index.js
+    buildCommand: cd server && npm install
+    startCommand: cd server && node src/index.js
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV

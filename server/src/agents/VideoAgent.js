@@ -9,6 +9,7 @@
 
 import AgentBase from './base/AgentBase.js';
 import ContentGenerator from '../engines/ContentGenerator.js';
+import VideoProcessor from '../engines/VideoProcessor.js';
 import config from '../../config/default.js';
 import { Content, VideoTask } from '../services/DatabaseService.js';
 import { createModuleLogger } from '../utils/logger.js';
@@ -25,8 +26,9 @@ export default class VideoAgent extends AgentBase {
       knowledgeBase: 'content-kb',
     });
     this.generator = new ContentGenerator();
+    this.processor = new VideoProcessor();
     this.canUseAI = Boolean(config.ai.apiKey);
-    this.ffmpegAvailable = this._checkFFmpeg();
+    this.ffmpegAvailable = this.processor.ffmpegAvailable;
   }
 
   /**
@@ -34,7 +36,12 @@ export default class VideoAgent extends AgentBase {
    * @param {Object} input - { contentId?, platform?, topic?, type? }
    */
   async execute(input = {}) {
-    // 创建视频任务
+    // 如果传入了taskId，直接处理已有任务
+    if (input.taskId) {
+      return await this.processor.processTask(input.taskId);
+    }
+
+    // 否则创建新任务并处理
     const task = await this._createTask(input);
     if (!task) {
       return { success: false, message: '无可处理的内容' };
@@ -52,15 +59,8 @@ export default class VideoAgent extends AgentBase {
 
     // 执行视频处理
     try {
-      await VideoTask.findByIdAndUpdate(task._id, { status: 'processing', progress: 10 });
-      const output = await this._processVideo(task);
-      await VideoTask.findByIdAndUpdate(task._id, {
-        status: 'completed',
-        progress: 100,
-        outputUrl: output,
-        completedAt: new Date(),
-      });
-      return { success: true, data: { taskId: task._id, outputUrl: output } };
+      const result = await this.processor.processTask(task._id);
+      return { success: result.success, data: { taskId: task._id, ...result.data } };
     } catch (err) {
       await VideoTask.findByIdAndUpdate(task._id, { status: 'failed', error: err.message });
       return { success: false, error: err.message };
@@ -98,30 +98,6 @@ export default class VideoAgent extends AgentBase {
     });
 
     return task;
-  }
-
-  /**
-   * 视频处理逻辑（FFmpeg）
-   */
-  async _processVideo(task) {
-    // 实际FFmpeg处理逻辑在这里
-    // 简化：返回占位URL（实际环境需要素材文件）
-    const outputUrl = `/uploads/videos/${task._id}.mp4`;
-    logger.info(`视频处理完成: ${outputUrl}`);
-    return outputUrl;
-  }
-
-  /**
-   * 检查FFmpeg可用性
-   */
-  _checkFFmpeg() {
-    try {
-      const { execSync } = require('child_process');
-      execSync('which ffmpeg');
-      return true;
-    } catch {
-      return false;
-    }
   }
 
   /**
