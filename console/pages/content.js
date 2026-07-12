@@ -144,6 +144,11 @@ window.genContent = async function() {
   const platform = document.getElementById('c_platform').value;
   const constitution = document.getElementById('c_const').value;
   const topic = document.getElementById('c_topic').value;
+  if (!topic || !topic.trim()) {
+    toast('请填写主题/选题');
+    if (btn) { btn.disabled = false; btn.textContent = '⚡ 一键生成'; }
+    return;
+  }
   let result;
 
   try {
@@ -161,14 +166,17 @@ window.genContent = async function() {
 
     if (result) {
       showResult(result, type);
+      toast('✅ 生成成功！');
 
       // 自动串联流程
       if (autoChain) {
         await autoChainFlow(result, type, platform);
       }
+    } else {
+      toast('⚠️ 生成结果为空');
     }
   } catch (e) {
-    toast('生成失败：' + e.message);
+    toast('❌ 生成失败：' + e.message);
     console.error('genContent error:', e);
   }
 
@@ -415,8 +423,14 @@ window.downloadVideo = async function() {
 
 // ==================== 内容库 ====================
 async function loadContent() {
+  const listEl = document.getElementById('contentList');
+  if (!listEl) return;
+  listEl.innerHTML = '<div class="empty">加载中…</div>';
   const { ok, j } = await API.content.list();
-  if (!ok || !j.success) return;
+  if (!ok || !j.success) {
+    listEl.innerHTML = '<div class="empty" style="color:#e06c6c">内容库加载失败：' + (j?.message || '网络异常') + '<br><button class="btn ghost sm" onclick="loadContent()">重试</button></div>';
+    return;
+  }
   const filter = document.getElementById('c_filter')?.value || '';
   const list = filter ? (j.data || []).filter(c => {
     if (filter === 'script') return c.type === 'video' || (c.metadata?.keyPoints?.length > 0);
@@ -425,7 +439,7 @@ async function loadContent() {
   }) : (j.data || []);
 
   document.getElementById('c_count').textContent = `共 ${list.length} 条`;
-  document.getElementById('contentList').innerHTML = list.map(c => `
+  listEl.innerHTML = list.map(c => `
     <div class="row">
       <div class="grow">
         <div class="ell"><b>${esc(c.title || '未命名')}</b></div>
