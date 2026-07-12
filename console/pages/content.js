@@ -90,7 +90,18 @@ export async function render(el) {
           <button class="btn green sm" onclick="publishNow()">📡 立即发布</button>
           <button class="btn blue sm" id="btn_video" onclick="sendToVideo()" style="display:none">🎬 送视频工厂</button>
           <button class="btn sm" id="btn_poster" onclick="genPosterFromScript()" style="display:none">🖼️ 生成配套海报</button>
-          <button class="btn ghost sm" onclick="copyResult()">📋 复制</button>
+          <button class="btn ghost sm" onclick="copyResult()">📋 复制原文</button>
+          <button class="btn ghost sm" id="btn_copy_douyin" onclick="copyForDouyin()" style="display:none">📱 一键复制(抖音格式)</button>
+          <button class="btn ghost sm" id="btn_dl_video" onclick="downloadVideo()" style="display:none">⬇️ 下载视频</button>
+        </div>
+        <!-- 抖音发布指引 -->
+        <div id="douyin_guide" class="hint mt12" style="display:none;background:#1a1a2e;border-radius:10px;padding:12px 14px;color:#ccc">
+          <b style="color:#f0c040">📱 发布到抖音步骤：</b><br>
+          1⃣ 点上方「⬇️ 下载视频」保存到手机<br>
+          2⃣ 打开 <a href="https://creator.douyin.com/creator-micro/content/upload" target="_blank" style="color:#60a5fa;text-decoration:underline" rel="noopener">抖音创作者中心 → 发布视频</a><br>
+          3⃣ 点「📱 一键复制(抖音格式)」，在标题栏 Ctrl+V<br>
+          4⃣ 上传视频 → 填写描述 → #话题标签自动带出 → 发布 ✅<br>
+          <span style="font-size:11px;color:#888">（全程约2分钟，AI已帮你完成90%的工作）</span>
         </div>
         <div id="gr_chainStatus" class="hint mt12"></div>
       </div>
@@ -303,6 +314,12 @@ function showResult(result, type) {
   // 显示/隐藏按钮
   document.getElementById('btn_video').style.display = (type === 'script' || type === 'copywriting') ? 'inline-flex' : 'none';
   document.getElementById('btn_poster').style.display = type === 'copywriting' ? 'inline-flex' : 'none';
+
+  // 抖音专属：一键复制(抖音格式) + 下载视频 + 发布指引
+  const isDouyin = (result.platform === 'douyin');
+  document.getElementById('btn_copy_douyin').style.display = isDouyin ? 'inline-flex' : 'none';
+  document.getElementById('btn_dl_video').style.display = isDouyin && (type === 'script') ? 'inline-flex' : 'none';
+  document.getElementById('douyin_guide').style.display = isDouyin ? 'block' : 'none';
 }
 
 // ==================== 操作按钮 ====================
@@ -346,6 +363,43 @@ window.copyResult = function() {
   const text = document.getElementById('gr_body').textContent;
   navigator.clipboard?.writeText(text);
   toast('已复制');
+};
+
+// 一键复制：格式化为抖音创作者中心可用格式（标题+描述+话题标签）
+window.copyForDouyin = function() {
+  const title = lastGenerated.title || '';
+  const body = (lastGenerated.body || '').slice(0, 2000); // 抖音限制
+  const tags = (lastGenerated.hashtags || []).map(h => '#' + h).join(' ');
+  // 抖音格式：第一行标题，空行，正文，空行，标签
+  const formatted = [title, '', body, '', tags].filter(Boolean).join('\n');
+  navigator.clipboard?.writeText(formatted).then(() => {
+    toast('✅ 已复制！去抖音创作者中心 Ctrl+V 粘贴');
+  }).catch(() => {
+    // 降级：用 textarea 方式复制
+    const ta = document.createElement('textarea');
+    ta.value = formatted; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    toast('✅ 已复制！');
+  });
+};
+
+// 下载生成的视频MP4（列出可用文件，打开最新的）
+window.downloadVideo = async function() {
+  try {
+    toast('正在查找视频文件…');
+    const { ok, j } = await API.video.files();
+    if (!ok || !j.success || !j.data?.length) {
+      // 尝试直接打开 uploads 目录
+      const latestDir = j.data?.[0]?.url;
+      if (latestDir) { window.open(latestDir, '_blank'); return; }
+      toast('暂无可下载的视频。先生成一个视频试试？');
+      return;
+    }
+    // 打开最新一个视频文件
+    window.open(j.data[0].url, '_blank');
+    toast(`已打开：${j.data[0].name} (${j.data[0].size})`);
+  } catch(e) { toast('下载失败：'+e.message); }
 };
 
 // ==================== 内容库 ====================

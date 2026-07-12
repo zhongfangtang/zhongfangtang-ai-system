@@ -98,6 +98,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CONSOLE_ROOT = path.resolve(__dirname, '..', '..', 'console');
 app.use('/js', express.static(path.join(CONSOLE_ROOT, 'js'), { maxAge: '1h' }));
 app.use('/pages', express.static(path.join(CONSOLE_ROOT, 'pages'), { maxAge: '1h' }));
+// 视频文件下载（同源，前端可直接链接）
+app.use('/uploads', express.static(path.resolve(process.cwd(), '..', 'uploads'), { maxAge: '0', setHeaders: (res, filePath) => res.set('Content-Disposition', 'attachment') }));
 
 // ==================== 静态页面（同源自托管：运营后台/看板/门户） ====================
 app.use('/', staticRoutes);

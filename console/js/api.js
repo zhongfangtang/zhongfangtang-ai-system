@@ -142,6 +142,7 @@ const finance = {
 // 视频
 const video = {
   tasks: (params = '') => api(`/api/v1/video/tasks${params}`).then(r => r.j),
+  files: () => api('/api/v1/video/files').then(r => r.j),
   generate: (data) => api('/api/v1/video/generate', { method: 'POST', body: JSON.stringify(data) }).then(r => r.j),
   templates: () => api('/api/v1/video/templates').then(r => r.j),
 };
