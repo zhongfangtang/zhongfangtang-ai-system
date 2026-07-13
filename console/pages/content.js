@@ -123,7 +123,12 @@ export async function render(el) {
   `;
 
   selectType('copywriting');
-  await loadContent();
+  try {
+    await loadContent();
+  } catch (e) {
+    console.error('内容库初始化失败:', e);
+    document.getElementById('contentList').innerHTML = '<div class="empty" style="color:#e06c6c">内容库加载失败: ' + esc(e.message) + '<br><button class="btn ghost sm" onclick="loadContent()">重试</button></div>';
+  }
 }
 
 window.selectType = function(type) {

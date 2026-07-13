@@ -182,6 +182,7 @@
 
 <script type="module">
 import * as API from './js/api.js';
+window.API = API; // 全局挂载：动态 import 的页面模块可直接使用
 
 let TOKEN = localStorage.getItem('zft_token') || '';
 let ME = localStorage.getItem('zft_me') || '';
